@@ -1,0 +1,81 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2021-10-20 23:20:09
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-10-21 00:10:10
+ * @Description:(Geometry) Vector3定义定点坐标数据
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>(Geometry)-Vector3定义定点坐标数据</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/three.js/r124/three.min.js"></script>
+  </head>
+  <body>
+    <script>
+      // Vector3是threejs的三维向量对象,可以通过Vector3对象表示一个顶点的xyz坐标，顶点的法线向量。
+      let scene = new THREE.Scene();
+
+      let camera = new THREE.PerspectiveCamera(
+        50,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+
+      camera.position.x = 50;
+      camera.position.y = 50;
+      camera.position.z = 200;
+
+      let renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x00ff00, 0.5);
+      document.body.appendChild(renderer.domElement);
+
+      let geometry = new THREE.Geometry(); // 空buffer几何体
+
+      // 定义顶点数据
+      let p1 = new THREE.Vector3(50, 0, 0);
+      let p2 = new THREE.Vector3(0, 70, 0);
+      let p3 = new THREE.Vector3(80, 70, 0);
+
+      // 顶点颜色数据
+      let color1 = new THREE.Color(0x00ff00);
+      let color2 = new THREE.Color(0xff0000);
+      let color3 = new THREE.Color(0x0000ff);
+
+      // 定义几何体位置属性
+      geometry.vertices.push(p1, p2, p3);
+      // 设置顶点颜色数据属性
+      geometry.colors.push(color1, color2, color3);
+
+      /*
+      注意设置几何体Geometry顶点颜色属性geometry.colors，对网格模型Mesh是无效的，对于点模型Points、线模型Line是有效果
+      */
+      // 点模型
+      // 定义材质
+      let material = new THREE.PointsMaterial({
+        vertexColors: THREE.VertexColors,
+        // side: THREE.DoubleSide,
+      });
+      let starFeild = new THREE.Points(geometry, material);
+      scene.add(starFeild);
+
+      // 线模型
+      let linematerial = new THREE.LineBasicMaterial({
+        vertexColors: THREE.VertexColors,
+      });
+      let line = new THREE.Line(geometry, linematerial);
+      scene.add(line);
+
+      function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+      }
+      render();
+    </script>
+  </body>
+</html>

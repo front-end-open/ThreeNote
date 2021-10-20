@@ -1,0 +1,84 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2021-10-20 22:35:47
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-10-20 23:12:12
+ * @Description: 顶点索引使用
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>顶点位置数据索引复用</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/three.js/r128/three.min.js"></script>
+  </head>
+  <body>
+    <script>
+      let scene = new THREE.Scene();
+
+      let camera = new THREE.PerspectiveCamera(
+        50,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+
+      camera.position.x = 50;
+      camera.position.y = 50;
+      camera.position.z = 200;
+
+      let renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x00ff00, 0.5);
+      document.body.appendChild(renderer.domElement);
+
+      let geometry = new THREE.BufferGeometry(); // 空buffer几何体
+
+      // 定义顶点数据
+      let vertices = new Float32Array([
+        0,
+        0,
+        0, //顶点1坐标
+        80,
+        0,
+        0, //顶点2坐标
+        80,
+        80,
+        0, //顶点3坐标
+        0,
+        80,
+        0, //顶点4坐标
+      ]);
+      // 顶点法向量定义
+      let normals = new Float32Array([0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1]);
+      // 创建顶点索引
+      let indexs = new Uint16Array([0, 1, 2, 0, 2, 3]);
+      // 定义几何体位置属性
+      geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+      // 设置顶点法向量属性
+      geometry.setAttribute("normal", new THREE.BufferAttribute(normals, 3));
+      // 设置顶点索引数据属性
+      /*
+      创建顶点索引数组的时候，可以根据顶点的数量选择类型数组Uint8Array、Uint16Array、Uint32Array。对于顶点索引而言选择整型类型数组，对于非索引的顶点数据，需要使用浮点类型数组Float32Array等。*/
+      geometry.index = new THREE.BufferAttribute(indexs, 1); // 一个为一组, 表示一个顶点. 通过顶点索引数组的，索引指向顶点数组，来组织网络模型三角形绘制
+
+      // 面渲染模型
+      // 定义材质
+      let material = new THREE.MeshBasicMaterial({
+        // vertexColors: THREE.VertexColors,
+        color: 0xf90000,
+        // side: THREE.DoubleSide,
+      });
+      let mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+      }
+      render();
+    </script>
+  </body>
+</html>

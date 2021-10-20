@@ -1,0 +1,84 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2021-10-19 11:12:38
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-10-19 11:30:00
+ * @Description: 不同几何体
+-->
+<!--
+ * @Author: wangshan
+ * @Date: 2021-10-18 18:18:15
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-10-19 11:10:26
+ * @Description: 球体
+-->
+<!--
+ * @Author: wangshan
+ * @Date: 2021-10-13 17:08:53
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-10-18 18:18:09
+ * @Description: 鼠标事件
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>球体</title>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <style>
+      .a {
+        color: #24272e;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      let scene = new THREE.Scene();
+
+      //   let geometry = new THREE.SphereGeometry(60, 110, 110); // 球体
+      //   geometry = new THREE.BoxGeometry(100, 100, 100); // 立方体
+      //   geometry = new THREE.CylinderGeometry(50, 50, 100, 25); // 柱体
+      //   geometry = new THREE.OctahedronGeometry(100); //正八方面体, 加上第二参数，设置其他订单，也能设置球体
+      //   geometry = new THREE.DodecahedronGeometry(50); // 正十二面体, 第二个参数，设置分割程度，到达极限值。可以设置十二体为球体
+      geometry = new THREE.IcosahedronGeometry(50); // 正二十面体
+      let metarial = new THREE.MeshBasicMaterial({
+        color: 0x00ff00,
+      });
+      let mesh = new THREE.Mesh(geometry, metarial);
+      scene.add(mesh);
+
+      let point = new THREE.PointLight(0x000000);
+      point.position.set(400, 200, 300);
+      scene.add(point);
+      let ambient = new THREE.AmbientLight(0x464646);
+      scene.add(ambient);
+
+      let width = innerWidth;
+      let height = innerHeight;
+      let k = width / height;
+      let s = 200;
+      let camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+      camera.position.set(100, 100, 100);
+      camera.lookAt(scene.position);
+
+      let renderer = new THREE.WebGLRenderer();
+      renderer.setSize(width, height);
+      renderer.setClearColor(0x24272e, 1);
+      document.body.appendChild(renderer.domElement);
+
+      // 通过 requestAnimation实现相同效果.
+      function render() {
+        renderer.render(scene, camera);
+        mesh.rotateZ(0.01);
+        requestAnimationFrame(render); //
+      }
+      render();
+      let controls = new THREE.OrbitControls(camera, renderer.domElement);
+      //   controls.addEventListener("change", render); // 已经周期性在 requestAnimationFrame中处理了render了，所以没必要在change中再次render。
+    </script>
+  </body>
+</html>
