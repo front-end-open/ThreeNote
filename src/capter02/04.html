@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2021-10-20 17:29:39
  * @LastEditors: wangshan
- * @LastEditTime: 2021-10-20 23:35:42
+ * @LastEditTime: 2021-10-21 14:48:08
  * @Description: 顶点法向量数据光照计算
 -->
 <!DOCTYPE html>
@@ -13,6 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>顶点法向量光照计算</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
   </head>
   <body>
     <script>
@@ -24,7 +25,15 @@
         1000
       );
 
-      // 光源
+      //   camera.position.x = 200;
+      //   camera.position.y = 100;
+      //   camera.position.z = 1000;
+      camera.lookAt(scene.position);
+
+      //   光源;
+      let point = new THREE.PointLight(0xffffff);
+      point.position.set(600, 300, 400);
+      scene.add(point);
       let ambient = new THREE.AmbientLight(0x444444);
       scene.add(ambient);
 
@@ -113,19 +122,19 @@
       // 面模型
       // 三角面(网格)渲染模式
       // 材质设置
-      //   let material = new THREE.MeshBasicMaterial({
-      //     color: 0x0000ff, //三角面颜色
-      //     side: THREE.DoubleSide, //两面可见
-      //   });
-      //   let mesh = new THREE.Mesh(geometry, material);
-      //   scene.add(mesh);
-      // 使用面模型实现插值计算, 渐变效果
       let material = new THREE.MeshBasicMaterial({
-        vertexColors: THREE.VertexColors,
+        color: 0x0000ff, //三角面颜色
         side: THREE.DoubleSide, //两面可见
       });
       let mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
+      // 使用面模型实现插值计算, 渐变效果
+      //   let material = new THREE.MeshBasicMaterial({
+      //     vertexColors: THREE.VertexColors,
+      //     side: THREE.DoubleSide, //两面可见
+      //   });
+      //   let mesh = new THREE.Mesh(geometry, material);
+      //   scene.add(mesh);
 
       // 点模型
       // 如果把材质属性.vertexColors的值设置为THREE.VertexColors,threejs渲染模型的时候就会使用几何体的顶点颜色数据geometry.attributes.color。
@@ -163,6 +172,8 @@
         requestAnimationFrame(render);
       }
       render();
+      let controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.addEventListener("change", render);
     </script>
   </body>
 </html>
