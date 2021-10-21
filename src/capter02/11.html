@@ -1,5 +1,12 @@
 <!--
  * @Author: wangshan
+ * @Date: 2021-10-22 00:22:53
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-10-22 00:26:44
+ * @Description: 模型的变换操作
+-->
+<!--
+ * @Author: wangshan
  * @Date: 2021-10-21 16:21:37
  * @LastEditors: wangshan
  * @LastEditTime: 2021-10-22 00:19:55
@@ -38,20 +45,6 @@
       console.log(geometry);
       console.log("几何体顶点坐标数据", geometry.vertices);
 
-      //   移动变换几何体
-
-      // 在几何体本身的缩放，平移均是通过操作顶点坐标来实现的
-      // 平移几何体
-
-      geometry.translate(10, 10, 10); // x, y, z
-
-      // 缩放几何体, 放大2倍
-      // 测试发现，几何体顶点坐标均变为原来二倍, 被放大
-      //   geometry.scale(2, 2, 2);
-
-      // 旋转
-      geometry.rotateX(Math.PI / 3); // 45deg
-
       // MeshBasicMaterial， 此素材不受光照影响
       // MeshLambertMaterial,此素材受光照影响，漫反射
       let material = new THREE.MeshLambertMaterial({
@@ -60,6 +53,14 @@
 
       let mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
+
+      // 模型mesh
+      // 缩放
+      // 顶点坐标无变化
+      //   mesh.scale.set(0.5, 1.5, 2);
+      // 对比几何体变换
+      // 顶点坐标变化
+      geometry.scale(0.5, 1.5, 2);
 
       // 点光源
       let point = new THREE.PointLight(0xffffff);
