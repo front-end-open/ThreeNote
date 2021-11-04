@@ -1,0 +1,91 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2021-11-04 17:16:53
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-11-04 18:57:17
+ * @Description: 光源对象(点)
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>光源对象</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/three.js/r124/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <script>
+      function init() {
+        let scene = new THREE.Scene();
+        let camera = new THREE.PerspectiveCamera(
+          100,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          2000
+        );
+        camera.position.set(150, 110, 10);
+        camera.lookAt(scene.position);
+
+        let renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        let geometry = new THREE.BoxGeometry(100, 100, 100);
+        let material = new THREE.MeshPhongMaterial({
+          color: 0xffffff,
+        });
+        let mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        // // 点光源需要考虑摄入角度，即光照角度，位置
+        // let point = new THREE.PointLight(0xffffff);
+        // point.position.set(100, 0, 100); // 点光源位置
+        // scene.add(point); // 点光源添加到场景中.
+        // 环境光， 环境光照考虑的是网格对象的整体亮度, 不需要考虑光照位置和角度，以及远近
+        // let ambient = new THREE.AmbientLight(0x888888);
+        // scene.add(ambient);
+
+        // 平行光
+        // 关键点:入射方向position,以及target
+        // 确定光线方向，以来确定光线与物体表面的入射角度.
+        let direclight = new THREE.DirectionalLight(0xffffff, 2);
+        direclight.position.set(100, 400, 200);
+        direclight.target = mesh;
+        scene.add(direclight);
+
+        // 聚光灯
+        // 起于一点，目标点发散的光源对象
+        let spodLight = new THREE.SpotLight(0xffffff);
+        spodLight.position.set(100, 500, 200);
+        spodLight.target = mesh;
+        scene.add(spodLight);
+
+        // 光源对象辅助
+        let spotLightHelper = new THREE.SpotLightHelper(spodLight);
+        scene.add(spotLightHelper);
+
+        // 三维坐标系对象辅助工具
+        // 聚光灯
+        let axesHelper = new THREE.AxesHelper(1000);
+        scene.add(axesHelper);
+
+        // 平行光
+        let helper = new THREE.DirectionalLightHelper(direclight, 5);
+        scene.add(helper);
+
+        function render() {
+          requestAnimationFrame(render);
+          renderer.render(scene, camera);
+        }
+
+        render();
+        let controls = new THREE.OrbitControls(camera, renderer.domElement); //创建控件对象
+        controls.addEventListener("change", render);
+      }
+      init();
+      //   window.addEventListener("resize", init);
+    </script>
+  </body>
+</html>
