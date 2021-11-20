@@ -1,0 +1,85 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2021-10-21 16:21:37
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-10-22 00:19:55
+ * @Description: 几何体变换
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>几何体变换</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/three.js/r124/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <script>
+      let scene = new THREE.Scene();
+
+      let camera = new THREE.PerspectiveCamera(
+        120,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+
+      camera.position.set(150, 110, 10);
+      camera.lookAt(scene.position);
+
+      let renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x444444, 0.5);
+      document.body.appendChild(renderer.domElement);
+
+      let geometry = new THREE.BoxGeometry(100, 100, 100);
+      console.log(geometry);
+      console.log("几何体顶点坐标数据", geometry.vertices);
+
+      //   移动变换几何体
+
+      // 在几何体本身的缩放，平移均是通过操作顶点坐标来实现的
+      // 平移几何体
+
+      geometry.translate(10, 10, 10); // x, y, z
+
+      // 缩放几何体, 放大2倍
+      // 测试发现，几何体顶点坐标均变为原来二倍, 被放大
+      //   geometry.scale(2, 2, 2);
+
+      // 旋转
+      geometry.rotateX(Math.PI / 3); // 45deg
+
+      // MeshBasicMaterial， 此素材不受光照影响
+      // MeshLambertMaterial,此素材受光照影响，漫反射
+      let material = new THREE.MeshLambertMaterial({
+        color: 0xff00ff,
+      });
+
+      let mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      // 点光源
+      let point = new THREE.PointLight(0xffffff);
+      point.position.set(400, 200, 300); // 点光源位置
+      scene.add(point); // 点光源添加到场景中.
+      //   // 环境光
+      let ambient = new THREE.AmbientLight(0x444444);
+      scene.add(ambient);
+
+      let axesHelper = new THREE.AxesHelper(150);
+      scene.add(axesHelper);
+
+      function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+      }
+      render();
+      // 定义缩放，移动操作
+      let controls = new THREE.OrbitControls(camera, renderer.domElement); //创建控件对象
+      controls.addEventListener("change", render); //监听鼠标、键盘事件
+    </script>
+  </body>
+</html>
