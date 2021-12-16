@@ -1,9 +1,9 @@
 <!--
  * @Author: wangshan
- * @Date: 2021-10-22 00:34:29
+ * @Date: 2021-12-17 00:07:52
  * @LastEditors: wangshan
- * @LastEditTime: 2021-12-16 22:31:28
- * @Description: 材质对象-点材质
+ * @LastEditTime: 2021-12-17 00:27:12
+ * @Description: 网格模型
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -11,9 +11,9 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>材质对象</title>
-    <script src="https://cdn.bootcdn.net/ajax/libs/three.js/r124/three.min.js"></script>
-    <!-- <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script> -->
+    <title>Document</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
   </head>
   <body>
     <script>
@@ -25,29 +25,40 @@
         0.1,
         2000
       );
-      camera.position.set(150, 110, 10);
+      console.log(camera, scene);
+      camera.position.set(200, 200, 200);
       camera.lookAt(scene.position);
+      scene.add(camera);
 
       let renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      //   renderer.setClearColor(0x444444, 0.5);
+
       document.body.appendChild(renderer.domElement);
 
-      let geometry = new THREE.SphereGeometry(100, 25, 25);
+      let geometry = new THREE.BoxGeometry(100, 100, 100);
 
-      var material = new THREE.PointsMaterial({
-        color: 0x0000ff, //颜色
-        size: 3, //点渲染尺寸
+      let material = new THREE.MeshLambertMaterial({
+        color: 0xffffff, //颜色
+        wireframe: true,
+        wireframeLinecap: "round",
       });
-      let pointlight = new THREE.Points(geometry, material);
-      scene.add(pointlight);
+      console.log("material:", material);
+      let mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(100, 100, 100);
+      scene.add(mesh);
+
+      console.log("mesh:", mesh);
 
       let point = new THREE.PointLight(0xffffff);
       point.position.set(400, 200, 300); // 点光源位置
       scene.add(point); // 点光源添加到场景中.
-      // 环境光
-      let ambient = new THREE.AmbientLight(0x444444);
-      scene.add(ambient);
+
+      let point1 = new THREE.PointLight(0xffffff);
+      point1.position.set(-400, -200, -300); // 点光源位置
+      scene.add(point1); // 点光源添加到场景中.
+
+      const light = new THREE.AmbientLight(0x404040); // soft white light
+      scene.add(light);
 
       let axesHelper = new THREE.AxesHelper(150);
       scene.add(axesHelper);

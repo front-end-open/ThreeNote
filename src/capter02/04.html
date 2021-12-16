@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2021-10-20 17:29:39
  * @LastEditors: wangshan
- * @LastEditTime: 2021-12-14 00:56:28
+ * @LastEditTime: 2021-12-14 22:28:49
  * @Description: 顶点法向量数据光照计算
 -->
 <!DOCTYPE html>
@@ -31,12 +31,14 @@
       camera.lookAt(scene.position);
 
       //   光源;
-      //   let point = new THREE.PointLight(0xffffff);
-      //   point.position.set(600, 300, 400);
-      //   scene.add(point);
-      //   let ambient = new THREE.AmbientLight(0x444444);
-      //   scene.add(ambient);
-
+      let point = new THREE.PointLight(0xffffff);
+      point.position.set(600, 300, 400);
+      scene.add(point);
+      let point2 = new THREE.PointLight(0xffffff);
+      point2.position.set(-600, -300, -400);
+      scene.add(point2);
+      let ambient = new THREE.AmbientLight(0xbb7777);
+      scene.add(ambient);
       let renderer = new THREE.WebGLRenderer(); // 渲染器
 
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -90,27 +92,27 @@
       ]);
 
       // 顶点法向量数据
-      //   let normals = new Float32Array([
-      //     0,
-      //     0,
-      //     1, //顶点1法向量
-      //     0,
-      //     0,
-      //     1, //顶点2法向量
-      //     0,
-      //     0,
-      //     1, //顶点3法向量
+      let normals = new Float32Array([
+        0,
+        0,
+        1, //顶点1法向量
+        0,
+        0,
+        1, //顶点2法向量
+        0,
+        0,
+        1, //顶点3法向量
 
-      //     0,
-      //     1,
-      //     0, //顶点4法向量
-      //     0,
-      //     1,
-      //     0, //顶点5法向量
-      //     0,
-      //     1,
-      //     0, //顶点6法向量
-      //   ]);
+        0,
+        1,
+        0, //顶点4法向量
+        0,
+        1,
+        0, //顶点5法向量
+        0,
+        1,
+        0, //顶点6法向量
+      ]);
       // 属性缓冲区对象
       //   let attribute = new THREE.BufferAttribute(vertices, 3); // 3个为一组，表示空间一点坐标
       // 设置几何体attributes属性的位置属性
@@ -118,13 +120,19 @@
       // 设置几何体attributes属性的颜色属性
       geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
       // 设置几何体attributes属性颜色属性
-      //   geometry.setAttribute("normal", new THREE.BufferAttribute(normals, 3));
+      geometry.setAttribute("normal", new THREE.BufferAttribute(normals, 3));
       // 面模型
       // 三角面(网格)渲染模式
       // 材质设置
-      let material = new THREE.MeshBasicMaterial({
-        // color: 0x0000ff, //三角面颜色
-        side: THREE.DoubleSide, //两面可见
+
+      // 该材质不受光照影响
+      //   let material = new THREE.MeshBasicMaterial({
+      //     // color: 0x0000ff, //三角面颜色
+      //     side: THREE.DoubleSide, //两面可见
+      //   });
+      let material = new THREE.MeshPhongMaterial({
+        vertexColors: true,
+        side: THREE.DoubleSide,
       });
       let mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);

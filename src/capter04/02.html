@@ -1,9 +1,9 @@
 <!--
  * @Author: wangshan
- * @Date: 2021-10-22 00:34:29
+ * @Date: 2021-12-16 23:59:56
  * @LastEditors: wangshan
- * @LastEditTime: 2021-12-16 22:31:28
- * @Description: 材质对象-点材质
+ * @LastEditTime: 2021-12-17 00:06:28
+ * @Description: 线模型
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -11,9 +11,9 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>材质对象</title>
+    <title>线模型</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/three.js/r124/three.min.js"></script>
-    <!-- <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script> -->
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
   </head>
   <body>
     <script>
@@ -25,29 +25,22 @@
         0.1,
         2000
       );
-      camera.position.set(150, 110, 10);
+      console.log(camera, scene);
+      camera.position.set(200, 200, 200);
       camera.lookAt(scene.position);
+      scene.add(camera);
 
       let renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      //   renderer.setClearColor(0x444444, 0.5);
+
       document.body.appendChild(renderer.domElement);
 
-      let geometry = new THREE.SphereGeometry(100, 25, 25);
-
-      var material = new THREE.PointsMaterial({
+      let geometry = new THREE.BoxGeometry(100, 100, 100);
+      let material = new THREE.LineBasicMaterial({
         color: 0x0000ff, //颜色
-        size: 3, //点渲染尺寸
       });
-      let pointlight = new THREE.Points(geometry, material);
-      scene.add(pointlight);
-
-      let point = new THREE.PointLight(0xffffff);
-      point.position.set(400, 200, 300); // 点光源位置
-      scene.add(point); // 点光源添加到场景中.
-      // 环境光
-      let ambient = new THREE.AmbientLight(0x444444);
-      scene.add(ambient);
+      let point = new THREE.Line(geometry, material);
+      scene.add(point);
 
       let axesHelper = new THREE.AxesHelper(150);
       scene.add(axesHelper);

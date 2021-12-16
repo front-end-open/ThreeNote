@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2021-10-20 18:03:39
  * @LastEditors: wangshan
- * @LastEditTime: 2021-10-20 22:32:27
+ * @LastEditTime: 2021-12-14 22:58:08
  * @Description: 顶点位置数据索引复用
 -->
 <!DOCTYPE html>
@@ -13,6 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>顶点位置数据索引复用</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
   </head>
   <body>
     <script>
@@ -25,8 +26,8 @@
         1000
       );
 
-      camera.position.x = 50;
-      camera.position.y = 50;
+      camera.position.x = 200;
+      camera.position.y = 200;
       camera.position.z = 200;
 
       let renderer = new THREE.WebGLRenderer();
@@ -35,18 +36,18 @@
       document.body.appendChild(renderer.domElement);
 
       let geometry = new THREE.BufferGeometry(); // 空buffer几何体
-
+      console.log(geometry);
       // 定义顶点数据
       let vertices = new Float32Array([
         0, 0, 0, 80, 0, 0, 80, 80, 0, 0, 0, 0, 80, 80, 0, 0, 80, 0,
       ]);
-      // 定义几何体位置属性
-      geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-
       // 顶点法向量定义
+      // 法向量的点，是通过顶点做垂直于网格模型平面的垂直线.
       let normals = new Float32Array([
         0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
       ]);
+
+      geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
       geometry.setAttribute("normal", new THREE.BufferAttribute(normals, 3));
 
       // 面渲染模型
@@ -54,16 +55,23 @@
       let material = new THREE.MeshBasicMaterial({
         // vertexColors: THREE.VertexColors,
         color: 0xf90,
-        // side: THREE.DoubleSide,
+        side: THREE.DoubleSide,
       });
       let mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
+
+      // 空间坐标辅助对象
+      let axesHelper = new THREE.AxesHelper(200);
+      scene.add(axesHelper);
 
       function render() {
         requestAnimationFrame(render);
         renderer.render(scene, camera);
       }
       render();
+
+      let controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.addEventListener("change", render);
     </script>
   </body>
 </html>
