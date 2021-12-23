@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2021-12-21 00:40:59
  * @LastEditors: wangshan
- * @LastEditTime: 2021-12-23 00:41:26
+ * @LastEditTime: 2021-12-23 22:13:46
  * @Description: 光照阴影计算
 -->
 <!DOCTYPE html>
@@ -34,6 +34,7 @@
 
       let renderer = new THREE.WebGLRenderer();
       // 如果不开启阴影，则不会渲染阴影
+      console.log(renderer, renderer.getRenderTarget());
       renderer.shadowMap.enabled = true; // 关键点4，
       //   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -73,7 +74,7 @@
       planeMesh.receiveShadow = true;
 
       // 方向光
-      var spotLight = new THREE.SpotLight(0xffffff);
+      var spotLight = new THREE.SpotLight(0xffffff, 5, 500);
       // 设置聚光光源位置
       spotLight.position.set(50, 100, 50);
       // 设置聚光光源发散角度
@@ -82,8 +83,7 @@
       // 设置用于计算阴影的光源对象
       spotLight.castShadow = true;
       // 设置计算阴影的区域，注意包裹对象的周围
-      spotLight.shadow.mapSize.width = 512;
-      spotLight.shadow.mapSize.height = 512;
+      spotLight.shadow.mapSize.set(2048, 2048);
       spotLight.shadow.camera.near = 0.1;
       spotLight.shadow.camera.far = 2000;
       //   spotLight.shadow.camera.fov = 20;

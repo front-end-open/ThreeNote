@@ -1,0 +1,84 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2021-12-23 23:32:09
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-12-23 23:45:35
+ * @Description: 立方体-贴图
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>立方体-贴图</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <canvas id="panel"></canvas>
+    <script>
+      let width = window.innerWidth,
+        height = window.innerHeight;
+
+      let panel = document.getElementById("panel");
+
+      let renderer = new THREE.WebGLRenderer({
+        canvas: panel,
+      });
+      renderer.setClearColor(0x888888);
+      renderer.setSize(width, height, false);
+
+      let camera = new THREE.PerspectiveCamera(100, width / height, 1, 1000);
+
+      let scene = new THREE.Scene();
+
+      camera.position.set(100, 500, 100); // 设置相机所在位置
+      camera.lookAt(new THREE.Vector3(0, 0, 0)); // 设置相机观察方向
+      scene.add(camera);
+
+      //使用面模型，渲染颜色纹理贴图。
+      let geometry = new THREE.BoxGeometry(100, 100, 100);
+
+      let textureLoader = new THREE.TextureLoader();
+
+      textureLoader.load(
+        "./static/earth.jpeg",
+        (texture) => {
+          let material = new THREE.MeshLambertMaterial({
+            map: texture,
+            side: THREE.DoubleSide,
+          });
+          let planmesh = new THREE.Mesh(geometry, material);
+          planmesh.rotateX(-Math.PI / 2);
+          //   planmesh.position.y = -200;
+          scene.add(planmesh);
+
+          // 加载成功过后，从新调用render渲染
+          render();
+        },
+        null,
+        (e) => {
+          console.log(e);
+        }
+      );
+
+      let ambientLight = new THREE.AmbientLight(0xffffff);
+      scene.add(ambientLight);
+
+      const axesHelper = new THREE.AxesHelper(600);
+      scene.add(axesHelper);
+
+      function render() {
+        renderer.render(scene, camera);
+      }
+
+      render();
+
+      window.addEventListener("resize", render);
+
+      let controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.addEventListener("change", render);
+    </script>
+  </body>
+</html>
