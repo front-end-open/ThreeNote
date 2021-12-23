@@ -1,0 +1,93 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2021-12-21 00:16:22
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-12-21 00:38:43
+ * @Description: 颜色计算算法测试
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>颜色计算算法测试</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <script>
+      /**
+       * 测试1： 材质对象设置颜色为 0xffffff,纯白色。光源对象分别保留红色分量。（hex十六进制表示的颜色，每两位对应一个RGB所表示颜色的分量）其余部分设置为黑色即是 0。最终物体别渲染为
+       * 红色。
+       *
+       * 测试2: 材质颜色设置保留蓝色分量，红色和绿色部分设置黑色分量，即0x0000ff. 光源对象颜色不变，光源计算的最终颜色为, 0x000000. 物体被渲染为黑色，这是因为蓝色不会反射红色光线。
+       *
+       *
+       */
+      let scene = new THREE.Scene();
+      let camera = new THREE.PerspectiveCamera(
+        100,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        2000
+      );
+      camera.position.set(200, 200, 200);
+      camera.lookAt(scene.position);
+      scene.add(camera);
+
+      let renderer = new THREE.WebGLRenderer();
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x888888);
+      document.body.appendChild(renderer.domElement);
+
+      let gemotry = new THREE.SphereGeometry(200, 200, 200);
+      let material = new THREE.MeshPhongMaterial({
+        color: 0x652356,
+      });
+
+      console.log(gemotry);
+      let mesh = new THREE.Mesh(gemotry, material);
+      scene.add(mesh);
+
+      let pointlight = new THREE.PointLight(0xff00ff);
+      pointlight.position.set(400, 200, 400);
+      scene.add(pointlight);
+
+      let ambientlight = new THREE.AmbientLight(0x4400ff);
+      scene.add(ambientlight);
+
+      //   let directionlight = new THREE.DirectionalLight(0xf90f90);
+      //   directionlight.position.set(0, 1, 0);
+      //   directionlight.target = mesh; // 设置模型对象到target
+
+      //   const spotLight = new THREE.SpotLight(0xffffff);
+      //   spotLight.angle = Math.PI / 10;
+      //   console.log(spotLight);
+      //   spotLight.position.set(100, 1000, 100);
+
+      //   spotLight.castShadow = true;
+
+      //   spotLight.shadow.mapSize.width = 512; // default
+      //   spotLight.shadow.mapSize.height = 512; // default
+      //   spotLight.shadow.camera.near = 0.5; // default
+      //   spotLight.shadow.camera.far = 500; // default
+      //   spotLight.shadow.focus = 1;
+
+      //   scene.add(spotLight);
+
+      //   const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+      //   scene.add(spotLightHelper);
+      //   console.log(spotLightHelper);
+      function render() {
+        // requestAnimationFrame(render);
+        renderer.render(scene, camera);
+      }
+
+      render();
+      let controls = new THREE.OrbitControls(camera, renderer.domElement); //创建控件对象
+      controls.addEventListener("change", render); //监听鼠标、键盘事件
+    </script>
+  </body>
+</html>

@@ -1,0 +1,89 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2021-12-23 00:19:32
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-12-23 00:19:33
+ * @Description: 聚光光源投影计算
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>聚光光源投影计算</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <script>
+      let scene = new THREE.Scene();
+      let camera = new THREE.PerspectiveCamera(
+        100,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        2000
+      );
+      camera.position.set(200, 200, 200);
+      camera.lookAt(scene.position);
+      scene.add(camera);
+
+      const renderer = new THREE.WebGLRenderer();
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x888888);
+      document.body.appendChild(renderer.domElement);
+
+      //Create a DirectionalLight and turn on shadows for the light
+      const light = new THREE.DirectionalLight(0xffffff, 1, 100);
+      light.position.set(0, 1, 0); //default; light shining from top
+      light.castShadow = true; // default false
+      scene.add(light);
+
+      //Set up shadow properties for the light
+      light.shadow.mapSize.width = 800; // default
+      light.shadow.mapSize.height = 800; // default
+      light.shadow.camera.near = 0.5; // default
+      light.shadow.camera.far = 500; // default
+
+      //Create a sphere that cast shadows (but does not receive them)
+      const sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
+      const sphereMaterial = new THREE.MeshStandardMaterial({
+        color: 0xff0000,
+      });
+      const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      sphere.castShadow = true; //default is false
+      sphere.receiveShadow = false; //default
+      scene.add(sphere);
+
+      //Create a plane that receives shadows (but does not cast them)
+      const planeGeometry = new THREE.PlaneGeometry(
+        window.innerWidth,
+        window.innerHeight,
+        32,
+        32
+      );
+      const planeMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+      const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+      plane.rotateX(-Math.PI / 2);
+      plane.position.y = -40;
+      plane.receiveShadow = true;
+      scene.add(plane);
+
+      //Create a helper for the shadow camera (optional)
+      const helper = new THREE.CameraHelper(light.shadow.camera);
+      scene.add(helper);
+
+      function render() {
+        // requestAnimationFrame(render);
+        renderer.render(scene, camera);
+      }
+
+      render();
+      let controls = new THREE.OrbitControls(camera, renderer.domElement); //创建控件对象
+      controls.addEventListener("change", render); //监听鼠标、键盘事件
+    </script>
+  </body>
+</html>
