@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2022-02-22 00:57:57
  * @LastEditors: wangshan
- * @LastEditTime: 2022-02-26 01:23:33
+ * @LastEditTime: 2022-02-26 17:37:36
  * @Description: 使用着色器绘制点
 -->
 
@@ -22,14 +22,14 @@
       // 顶点着色器
       let VSHADER_SOURCE =
         "void main() {\n" +
-        "gl_Position = vec4(1.0, 1.0, 0.0, 1.0);\n" + // 设置坐标
-        "gl_PointSize = 400.0;\n" + // 设置尺寸
+        "gl_Position = vec4(0.0, 0.5, 0.0, 1.0);\n" + // 设置坐标
+        "gl_PointSize = 10.0;\n" + // 设置尺寸
         "}\n";
 
       // 片元着色器, 为顶点着色器设置颜色
       let FSHADER_SOURCE =
         "void main() {\n" +
-        "gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);\n" + // 设置颜色
+        "gl_FragColor = vec4(0.0, 1.0, 0.0, 0.5);\n" + // 设置颜色
         "}\n";
 
       function main() {
