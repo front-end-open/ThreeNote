@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2021-12-23 23:27:38
  * @LastEditors: wangshan
- * @LastEditTime: 2021-12-23 23:31:51
+ * @LastEditTime: 2022-02-10 23:59:22
  * @Description: 球体模型-贴图渲染-地球仪
 -->
 <!DOCTYPE html>
@@ -23,7 +23,7 @@
       let renderer = new THREE.WebGLRenderer({
         canvas: panel,
       });
-      renderer.setClearColor(0x888888);
+      renderer.setClearColor(0xcccccc);
       renderer.setSize(window.innerWidth, window.innerHeight, false);
 
       let camera = new THREE.PerspectiveCamera(
@@ -53,6 +53,8 @@
           });
           let planmesh = new THREE.Mesh(geometry, material);
           planmesh.rotateX(-Math.PI / 2);
+
+          console.log(geometry);
           //   planmesh.position.y = -200;
           scene.add(planmesh);
 
@@ -64,6 +66,9 @@
           console.log(e);
         }
       );
+
+      const gridHelper = new THREE.GridHelper(1000, 50, 0x000000, 0x888888);
+      scene.add(gridHelper);
 
       let ambientLight = new THREE.AmbientLight(0xffffff);
       scene.add(ambientLight);

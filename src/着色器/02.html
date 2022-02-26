@@ -1,0 +1,46 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2022-02-22 00:30:41
+ * @LastEditors: wangshan
+ * @LastEditTime: 2022-02-22 00:52:12
+ * @Description: webgl-base
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body onload="main()">
+    <canvas id="glcanvas" width="1000" height="1000">
+      please use thre browser supporting 'canvas'
+    </canvas>
+    <script>
+      function main() {
+        let canvas = document.getElementById("glcanvas");
+        let gl = canvas.getContext("webgl", true);
+
+        if (!gl) {
+          console.warn(
+            "Unable to initialize WebGL. Your browser or machine may not support it."
+          );
+          return;
+        }
+        console.log(gl);
+
+        // 设置清除颜色,设置清空颜色到缓冲区
+        /**
+         * clearColor
+         *
+         */
+        //指定颜色过后，此颜色量存储在webgl系统中，作为缓存使用.
+        gl.clearColor(0.0, 1.0, 0.0, 1.0); // 设置绿色填充色
+        // gl.clearColor(1, 0, 0, 1); // 设置红色填充色
+        // 使用缓冲区颜色重置canvas
+        gl.clear(gl.COLOR_BUFFER_BIT); // 多基本缓冲区模型方法
+      }
+    </script>
+  </body>
+</html>

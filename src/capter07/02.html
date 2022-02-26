@@ -1,0 +1,160 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2022-02-08 23:26:13
+ * @LastEditors: wangshan
+ * @LastEditTime: 2022-02-09 00:25:18
+ * @Description:  层级模型命名，遍历，查找
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Group-模型命名，查找，遍历</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <canvas id="panel"></canvas>
+    <script>
+      // 球体网格模型函数
+      function sphereMesh(R, x, y, z) {
+        let geometry = new THREE.SphereGeometry(R, 25, 25);
+        let metarial = new THREE.MeshPhongMaterial({
+          color: 0x0000ff,
+        });
+
+        let mesh = new THREE.Mesh(geometry, metarial);
+
+        mesh.position.set(x, y, z);
+
+        return mesh;
+      }
+
+      // 圆柱体网格模型构建函数
+      function cylinderMesh(R, h, x, y, z) {
+        let geometry = new THREE.CylinderGeometry(R, R, h, 25, 25); //球体几何体
+        let material = new THREE.MeshPhongMaterial({
+          color: 0x0000ff,
+        }); //材质对象Material
+
+        let mesh = new THREE.Mesh(geometry, material); // 创建网格模型对象
+
+        mesh.position.set(x, y, z);
+
+        return mesh;
+      }
+
+      let panel = document.getElementById("panel");
+
+      let renderer = new THREE.WebGLRenderer({
+        canvas: panel,
+      });
+
+      renderer.setClearColor(0x888888);
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+
+      let camera = new THREE.PerspectiveCamera(
+        100,
+        window.innerWidth / window.innerHeight,
+        1,
+        1000
+      );
+
+      let scene = new THREE.Scene();
+
+      camera.position.set(100, 500, 100); // 设置相机所在位置
+      camera.lookAt(new THREE.Vector3(0, 0, 0)); // 设置相机观察方向
+
+      scene.add(camera);
+
+      //  创建模型
+      // 头部子模型
+      let headMesh = sphereMesh(10, 0, 0, 0);
+      headMesh.name = "脑壳";
+      let leftEyeMesh = sphereMesh(1, 8, 5, 4);
+      leftEyeMesh.name = "左眼";
+      let rightEyeMesh = sphereMesh(1, 8, 5, -4);
+      rightEyeMesh.name = "右眼";
+      // 头部组
+      let headGroup = new THREE.Group();
+      headGroup.name = "头部";
+      headGroup.add(headMesh, leftEyeMesh, rightEyeMesh);
+
+      // 身体网格模型和组
+      let neckMesh = cylinderMesh(3, 10, 0, -15, 0);
+      neckMesh.name = "脖子";
+      let bodyMesh = cylinderMesh(14, 30, 0, -35, 0);
+      bodyMesh.name = "腹部";
+      let leftLegMesh = cylinderMesh(4, 60, 0, -80, -7);
+      leftLegMesh.name = "左腿";
+      let rightLegMesh = cylinderMesh(4, 60, 0, -80, 7);
+      rightLegMesh.name = "右腿";
+      let legGroup = new THREE.Group();
+      legGroup.name = "腿";
+      legGroup.add(leftLegMesh, rightLegMesh);
+
+      let bodyGroup = new THREE.Group();
+      bodyGroup.name = "身体";
+      bodyGroup.add(neckMesh, bodyMesh, legGroup);
+
+      // 人Group
+      let personGroup = new THREE.Group();
+      personGroup.name = "人";
+      personGroup.add(headGroup, bodyGroup);
+      personGroup.translateY(50);
+
+      scene.add(personGroup);
+
+      // 模型遍历
+      scene.traverse(function (obj) {
+        if (obj.type === "Group") {
+          //   console.log(obj.name);
+        }
+        if (obj.type === "Mesh") {
+          //   console.log("  " + obj.name);
+          obj.material.color.set(0xffff00);
+        }
+        if ((obj.name === "左眼") | (obj.name === "右眼")) {
+          obj.material.color.set(0x000000);
+        }
+        // 打印id属性
+        // console.log(obj.id);
+        // // 打印该对象的父对象
+        // console.log(obj.parent);
+        // // 打印该对象的子对象
+        // console.log(obj.children);
+      });
+
+      // 模型查找
+      // .getObjectById()、.getObjectByName()
+      // 其他方法参考Object3D
+
+      // 遍历查找scene中复合条件的子对象，并返回id对应的对象
+      let idNode = scene.getObjectById(10);
+      console.log(idNode);
+      idNode.material.color.set(0xff64f0);
+
+      // 遍历查找对象的子对象，返回name对应的对象（name是可以重名的，返回第一个）
+      var nameNode = scene.getObjectByName("左腿");
+      console.log(nameNode);
+      nameNode.material.color.set(0xff0000);
+
+      let ambientLight = new THREE.AmbientLight(0xffffff);
+      scene.add(ambientLight);
+
+      const axesHelper = new THREE.AxesHelper(600);
+      scene.add(axesHelper);
+
+      function render() {
+        renderer.render(scene, camera);
+      }
+
+      render();
+
+      let controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.addEventListener("change", render);
+    </script>
+  </body>
+</html>

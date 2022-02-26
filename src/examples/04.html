@@ -1,0 +1,256 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2022-02-13 01:28:59
+ * @LastEditors: wangshan
+ * @LastEditTime: 2022-02-16 14:46:01
+ * @Description: 镜头补间动画
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>镜头补间动画</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="../../js//GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+    <style>
+      #olympic_loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        background: #ffffff;
+        background-size: auto 50%;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        font-size: 120px;
+        color: #2d2d2d;
+        text-shadow: 0 1px 0 hsl(174, 5%, 80%), 0 2px 0 hsl(174, 5%, 75%),
+          0 3px 0 hsl(174, 5%, 70%), 0 4px 0 hsl(174, 5%, 66%),
+          0 5px 0 hsl(174, 5%, 64%), 0 6px 0 hsl(174, 5%, 62%),
+          0 7px 0 hsl(174, 5%, 61%), 0 8px 0 hsl(174, 5%, 60%),
+          0 0 5px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.2),
+          0 3px 5px rgba(0, 0, 0, 0.2), 0 5px 10px rgba(0, 0, 0, 0.2),
+          0 10px 10px rgba(0, 0, 0, 0.2), 0 20px 20px rgba(0, 0, 0, 0.3);
+      }
+      .show {
+        display: block;
+      }
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="panel"></canvas>
+    <!-- <div id="olympic_loading" class="show">
+      <div id="box"></div>
+    </div> -->
+    <script>
+      (function () {
+        var script = document.createElement("script");
+        script.onload = function () {
+          var stats = new Stats();
+          document.body.appendChild(stats.dom);
+          requestAnimationFrame(function loop() {
+            stats.update();
+            requestAnimationFrame(loop);
+          });
+        };
+        script.src = "//mrdoob.github.io/stats.js/build/stats.min.js";
+        document.head.appendChild(script);
+      })();
+      //   const loadbox = document.getElementById("olympic_loading");
+      //   const box = document.getElementById("box");
+      //   console.log(loadbox, box);
+      function animateCamera(camera, controls, newP, newT, time = 2000) {
+        var tween = new TWEEN.Tween({
+          x1: camera.position.x, // 相机x
+          y1: camera.position.y, // 相机y
+          z1: camera.position.z, // 相机z
+          x2: controls.target.x, // 控制点的中心点x
+          y2: controls.target.y, // 控制点的中心点y
+          z2: controls.target.z, // 控制点的中心点z
+        })
+          .to(
+            {
+              x1: newP.x,
+              y1: newP.y,
+              z1: newP.z,
+              x2: newT.x,
+              y2: newT.y,
+              z2: newT.z,
+            },
+            time
+          )
+          .easing(TWEEN.Easing.Cubic.InOut)
+          .onUpdate((object) => {
+            camera.position.x = object.x1;
+            camera.position.y = object.y1;
+            camera.position.z = object.z1;
+            controls.target.x = object.x2;
+            controls.target.y = object.y2;
+            controls.target.z = object.z2;
+            controls.update();
+          });
+
+        return tween;
+      }
+
+      let panel = document.getElementById("panel");
+
+      let renderer = new THREE.WebGLRenderer({
+        canvas: panel,
+      });
+      renderer.setClearColor(0xcccccc);
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+
+      let camera = new THREE.PerspectiveCamera(
+        100,
+        window.innerWidth / window.innerHeight,
+        1,
+        2500
+      );
+
+      let scene = new THREE.Scene();
+
+      camera.position.set(0, 30, 100);
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
+      scene.add(camera);
+
+      //   // 添加模型
+      //   let geometry = new THREE.PlaneGeometry(200, 200, 4, 4);
+      //   let textureLoader = new THREE.TextureLoader();
+      const manager = new THREE.LoadingManager();
+      let loader = new THREE.GLTFLoader(manager);
+
+      let controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+      manager.onLoad = function () {
+        console.log("load commplete");
+        // let tween = animateCamera(
+        //   camera,
+        //   controls,
+        //   { x: 600, y: 600, z: 600 },
+        //   { x: 0, y: 0, z: 5 },
+        //   2000,
+        //   () => {}
+        // );
+
+        // tween.start();
+      };
+      manager.onProgress = function (url, itemsLoaded, itemsTotal) {
+        if (Math.floor(itemsLoaded / itemsTotal / 100) === 100) {
+          console.log((itemsLoaded / itemsTotal) * 100);
+          //   loadbox.classList.add("hidden");
+          //   loadbox.className = "hidden";
+        } else {
+          //   box.innerHTML = (itemsLoaded / itemsTotal) * 100;
+          console.log((itemsLoaded / itemsTotal) * 100);
+        }
+        // console.log(
+        //   "Loading file: " +
+        //     url +
+        //     ".\nLoaded " +
+        //     itemsLoaded +
+        //     " of " +
+        //     itemsTotal +
+        //     " files."
+        // );
+      };
+      //   textureLoader.load(
+      //     "../capter06/static/earth.jpeg",
+      //     (texture) => {
+      //       let material = new THREE.MeshBasicMaterial({
+      //         map: texture,
+      //         side: THREE.DoubleSide,
+      //       });
+      //       let planmesh = new THREE.Mesh(geometry, material);
+      //       planmesh.rotateX(Math.PI / 2);
+
+      //       scene.add(planmesh);
+
+      //       let boxgeometry = new THREE.BoxGeometry(100, 100, 100);
+      //       let boxmaterial = new THREE.MeshBasicMaterial({
+      //         color: 0xffff3f,
+      //         side: THREE.DoubleSide,
+      //       });
+      //       let boxmaterial2 = new THREE.MeshLambertMaterial({
+      //         map: texture,
+      //       });
+
+      //       let materialArr = [
+      //         boxmaterial2,
+      //         boxmaterial,
+      //         boxmaterial,
+      //         boxmaterial,
+      //         boxmaterial,
+      //         boxmaterial2,
+      //       ];
+
+      //       let boxmesh = new THREE.Mesh(boxgeometry, materialArr);
+      //       boxmesh.translateY(100);
+      //       scene.add(boxmesh);
+
+      //       // 加载成功过后，从新调用render渲染
+      //       render();
+      //     },
+      //     null,
+      //     (e) => {
+      //       console.log(e);
+      //     }
+      //   );
+      loader.load(
+        "../../SimpleSkinning.gltf",
+        (gltf) => {
+          console.log(gltf);
+          gltf.scene.scale.set(10, 10, 10);
+          scene.add(gltf.scene);
+          render();
+        },
+        () => {},
+        (err) => {
+          console.log(err);
+        }
+      );
+
+      //   console.log(geometry, uvs);
+
+      const gridHelper = new THREE.GridHelper(400, 10, 0x000000, 0x888888);
+      scene.add(gridHelper);
+
+      //   const helper = new THREE.CameraHelper(camera);
+      //   scene.add(helper);
+
+      const light = new THREE.AmbientLight(0x404040); // soft white light
+      scene.add(light);
+
+      const axesHelper = new THREE.AxesHelper(600);
+      scene.add(axesHelper);
+
+      //   function animate() {
+      //     controls && controls.update();
+      //     TWEEN && TWEEN.update();
+
+      //     requestAnimationFrame(animate);
+      //     renderer.render(scene, camera);
+      //   }
+      //   animate();
+      function render() {
+        renderer.render(scene, camera);
+      }
+
+      render();
+
+      controls.addEventListener("change", render);
+      /*
+        通过测试发现，通过材质数组，将多个材质对象构成数组。来实现对模型对象，任意面贴图。
+      */
+    </script>
+  </body>
+</html>
