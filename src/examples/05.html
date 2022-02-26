@@ -1,0 +1,173 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2022-02-16 15:45:21
+ * @LastEditors: wangshan
+ * @LastEditTime: 2022-02-18 16:29:18
+ * @Description: 
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <canvas id="panel"></canvas>
+    <script>
+      let panel = document.getElementById("panel");
+
+      let renderer = new THREE.WebGLRenderer({
+        canvas: panel,
+      });
+      renderer.setClearColor(0xcccccc);
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+
+      let camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        2500
+      );
+
+      let scene = new THREE.Scene();
+
+      camera.position.set(500, 500, 500); // 设置相机本地坐标系所在位置
+      camera.lookAt(new THREE.Vector3(0, 0, 0)); // 设置相机观察方向, 世界坐标系
+      scene.add(camera);
+
+      // 放置模型
+      let gemotry = new THREE.BoxGeometry(100, 100, 100);
+      let material1 = new THREE.MeshBasicMaterial({
+        color: "gray",
+      });
+      let material2 = new THREE.MeshBasicMaterial({
+        color: "gray",
+      });
+      let material3 = new THREE.MeshBasicMaterial({
+        color: "gray",
+      });
+      let mesh1 = new THREE.Mesh(gemotry, material1);
+      let mesh2 = new THREE.Mesh(gemotry, material2);
+      let mesh3 = new THREE.Mesh(gemotry, material3);
+      mesh2.translateY(120);
+      mesh3.translateX(120);
+      mesh1.name = "Box1";
+      mesh2.name = "Box2";
+      mesh3.name = "Box3";
+
+      scene.add(mesh1);
+      scene.add(mesh2);
+      scene.add(mesh3);
+
+      const gridHelper = new THREE.GridHelper(1000, 100, 0x000000, 0x888888);
+      scene.add(gridHelper);
+
+      let ambientLight = new THREE.AmbientLight(0xffffff);
+      scene.add(ambientLight);
+
+      const axesHelper = new THREE.AxesHelper(600);
+      scene.add(axesHelper);
+      console.log(scene);
+      // 设置光线投影
+      const raycaster = new THREE.Raycaster();
+      const pointer = new THREE.Vector2();
+
+      function render() {
+        // requestAnimationFrame(render);
+
+        // 通过摄像机和鼠标位置更新射线
+        // raycaster.setFromCamera(pointer, camera);
+        // 计算物体和射线的焦点
+        // const intersects = raycaster.intersectObjects(scene.children);
+        // for (let i = 0; i < intersects.length; i++) {
+        //   intersects[i].object.material.color.set(0xff0000);
+        // }
+        // renderRaycasterObj(raycaster, scene, camera, pointer);
+        renderer.render(scene, camera);
+      }
+
+      render();
+
+      //   requestAnimationFrame(render);
+
+      let controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.addEventListener("change", render);
+
+      //   var projectiveObj = null;
+      function renderRaycasterObj() {
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(pointer, camera); // 更新射线
+        var intersects = raycaster.intersectObjects([mesh1, mesh2, mesh3]); // 检查和射线相交的物体.
+        // console.log(intersects);
+        if (intersects.length > 0) {
+          var currentProjectiveObjT = intersects[0].object;
+          //   if (projectiveObj != currentProjectiveObjT) {
+          //     if (
+          //       currentProjectiveObjT instanceof THREE.AxisHelper ||
+          //       currentProjectiveObjT instanceof THREE.GridHelper
+          //     ) {
+          //       //穿过的是坐标轴线和网格线
+          //       return;
+          //     }
+          //     projectiveObj = intersects[0].object;
+          //     projectiveObj.material.color.setHex(projectiveObj.currentHex);
+          //   }
+          // } else {
+          //   projectiveObj = null;
+
+          // 选中模型的第一个设置为半透明
+          console.log(
+            "选择模型:",
+            intersects,
+            "第一个交互模型: ",
+            intersects[0]
+          );
+
+          if (currentProjectiveObjT.hasChecked) {
+            currentProjectiveObjT.hasChecked = false;
+            currentProjectiveObjT.material.color.set("gray");
+          } else {
+            currentProjectiveObjT.hasChecked = true;
+            intersects[0].object.material.color.set("#f90432");
+          }
+          //   render();
+        }
+        // }
+      }
+
+      window.addEventListener("click", onPointerMove);
+
+      function onPointerMove(event) {
+        // 将鼠标位置归一化为设备坐标。x 和 y 方向的取值范围是 (-1 to +1)
+        let cavas = document.getElementsByTagName("canvas")[0];
+        pointer.x = (event.clientX / cavas.width) * 2 - 1;
+        pointer.y = -(event.clientY / cavas.height) * 2 + 1;
+        renderRaycasterObj();
+        // if (projectiveObj) {
+        //   console.log(projectiveObj);
+        //   if (projectiveObj.hasChecked) {
+        //     projectiveObj.hasChecked = false;
+        //     projectiveObj.material.color.set("gray");
+        //   } else {
+        //     projectiveObj.hasChecked = true;
+        //     projectiveObj.material.color.set("#dd830d");
+        //   }
+        // }
+
+        //
+        console.log(
+          "mouseAxies: ",
+          event.clientX,
+          event.clientY,
+          "鼠标位置: ",
+          pointer
+        );
+      }
+      //   requestAnimationFrame(render);
+    </script>
+  </body>
+</html>

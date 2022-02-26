@@ -1,0 +1,86 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2022-02-12 01:40:57
+ * @LastEditors: wangshan
+ * @LastEditTime: 2022-02-12 02:21:16
+ * @Description: 自定义几何体定点uv坐标
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=f, initial-scale=1.0" />
+    <title>自定义几何体定点uv坐标</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <canvas id="panel"></canvas>
+    <script>
+      let panel = document.getElementById("panel");
+
+      let renderer = new THREE.WebGLRenderer({
+        canvas: panel,
+      });
+      renderer.setClearColor(0xcccccc);
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+
+      let camera = new THREE.PerspectiveCamera(
+        100,
+        window.innerWidth / window.innerHeight,
+        1,
+        2000
+      );
+
+      let scene = new THREE.Scene();
+
+      camera.position.set(100, 100, 100); // 设置相机本地坐标系所在位置
+      camera.lookAt(new THREE.Vector3(100, 100, 0)); // 设置相机观察方向, 世界坐标系
+      scene.add(camera);
+
+      // 加载模型
+      let loader = new THREE.ObjectLoader();
+      // TextureLoader创建一个纹理加载器对象，可以加载图片作为几何体纹理
+      let textureLoader = new THREE.TextureLoader();
+      loader.load(
+        "../models/wrap2.json",
+        function (obj) {
+          console.log(obj);
+          scene.add(obj); //加载返回的对象插入场景中
+          // 执行load方法，加载纹理贴图成功后，返回一个纹理对象Texture
+          textureLoader.load("./static/earth.jpeg", function (texture) {
+            // 设置球体网格模型材质的map属性
+            obj.children[0].material.map = texture;
+            // 告诉threejs渲染器系统，材质对象的map属性已更新
+            obj.children[0].material.needsUpdate = true;
+          });
+        },
+        function (p) {
+          console.log(p);
+        },
+        function (e) {
+          console.log(p);
+        }
+      );
+
+      const gridHelper = new THREE.GridHelper(200, 4, 0x000000, 0x888888);
+      scene.add(gridHelper);
+
+      let ambientLight = new THREE.AmbientLight(0xffffff);
+      scene.add(ambientLight);
+
+      const axesHelper = new THREE.AxesHelper(600);
+      scene.add(axesHelper);
+
+      function render() {
+        renderer.render(scene, camera);
+      }
+
+      render();
+
+      let controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.addEventListener("change", render);
+    </script>
+  </body>
+</html>

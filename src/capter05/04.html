@@ -1,0 +1,107 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2021-12-22 23:03:53
+ * @LastEditors: wangshan
+ * @LastEditTime: 2021-12-23 00:02:18
+ * @Description: 投影计算
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>投影计算</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <script>
+      let scene = new THREE.Scene();
+      let camera = new THREE.PerspectiveCamera(
+        100,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        2000
+      );
+      camera.position.set(200, 200, 200);
+      camera.lookAt(scene.position);
+      scene.add(camera);
+
+      //定义相机视椎体辅助对象
+      const chelper = new THREE.CameraHelper(camera);
+      scene.add(chelper);
+
+      let renderer = new THREE.WebGLRenderer();
+      // 如果不开启阴影，则不会渲染阴影
+      renderer.shadowMap.enabled = true; // 关键点4，
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x888888);
+      document.body.appendChild(renderer.domElement);
+
+      let geometry = new THREE.BoxGeometry(50, 100, 50);
+      let material = new THREE.MeshLambertMaterial({
+        color: 0x0000ff,
+      });
+      let mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      // 设置产生投影的网格模型
+      mesh.castShadow = true; // 关键点1
+      mesh.receiveShadow = false;
+
+      //创建一个平面几何体作为投影面
+      let planeGeometry = new THREE.PlaneGeometry(
+        window.innerWidth,
+        window.innerHeight
+      );
+      let planeMaterial = new THREE.MeshLambertMaterial({
+        color: 0xffffff,
+        side: THREE.DoubleSide,
+      });
+
+      let planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+      scene.add(planeMesh); //网格模型添加到场景中
+      planeMesh.rotateX(-Math.PI / 2); //旋转网格模型
+      planeMesh.position.y = -100; //设置网格模型y坐标
+      // 设置接收阴影的投影面, 关键点2
+      planeMesh.receiveShadow = true;
+
+      // 方向光
+      let directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      // 设置光源位置
+      directionalLight.position.set(60, 100, 40);
+      scene.add(directionalLight);
+      // 设置用于计算阴影的光源对象, 关键点 3
+      directionalLight.castShadow = true;
+      // 设置计算阴影的区域，最好刚好紧密包围在对象周围
+      // 计算阴影的区域过大：模糊  过小：看不到或显示不完整
+      // shadow属性camera定义场景中模型的深度图，即模型阴影
+      directionalLight.shadow.camera.near = 1;
+      directionalLight.shadow.camera.far = 500;
+
+      //   directionalLight.shadow.camera.left = -50;
+      //   directionalLight.shadow.camera.right = 50;
+      //   directionalLight.shadow.camera.top = 200;
+      //   directionalLight.shadow.camera.bottom = -100;
+
+      // 定义阴影的尺寸
+      directionalLight.shadow.mapSize.width = 1000;
+      directionalLight.shadow.mapSize.height = 1000;
+
+      console.log(directionalLight.shadow, directionalLight);
+      const helper = new THREE.DirectionalLightHelper(directionalLight, 100);
+      scene.add(helper);
+
+      function render() {
+        renderer.render(scene, camera);
+      }
+
+      render();
+
+      let controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.addEventListener("change", render);
+    </script>
+  </body>
+</html>

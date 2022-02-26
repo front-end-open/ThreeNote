@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2021-10-13 15:41:22
  * @LastEditors: wangshan
- * @LastEditTime: 2021-10-13 15:43:29
+ * @LastEditTime: 2021-12-16 22:13:38
  * @Description: requestAnimationFrame
 -->
 <!DOCTYPE html>
@@ -22,6 +22,9 @@
       let metarial = new THREE.MeshLambertMaterial({
         color: 0x00ff00,
       });
+      console.log(geometry);
+      console.log("顶点数据", geometry.vertices);
+      console.log("三角形面数据", geometry.faces);
       let mesh = new THREE.Mesh(geometry, metarial);
       scene.add(mesh);
 

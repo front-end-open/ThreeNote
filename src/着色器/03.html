@@ -1,0 +1,95 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2022-02-22 00:57:57
+ * @LastEditors: wangshan
+ * @LastEditTime: 2022-02-26 01:23:33
+ * @Description: 使用着色器绘制点
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>webgl-着色器绘制点</title>
+  </head>
+  <body onload="main()">
+    <canvas id="glwebgl" width="400" height="400"> </canvas>
+    <script>
+      // 着色器使用流程
+      // 1.编译 2.链接 3.使用 4.绘图
+      // 顶点着色器
+      let VSHADER_SOURCE =
+        "void main() {\n" +
+        "gl_Position = vec4(1.0, 1.0, 0.0, 1.0);\n" + // 设置坐标
+        "gl_PointSize = 400.0;\n" + // 设置尺寸
+        "}\n";
+
+      // 片元着色器, 为顶点着色器设置颜色
+      let FSHADER_SOURCE =
+        "void main() {\n" +
+        "gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);\n" + // 设置颜色
+        "}\n";
+
+      function main() {
+        let canvas = document.getElementById("glwebgl");
+        let gl = canvas.getContext("webgl");
+
+        if (!gl) {
+          console.warn("浏览器不支持webgl");
+          return;
+        }
+
+        // 1. 编译
+        let vShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vShader, VSHADER_SOURCE);
+        gl.compileShader(vShader);
+
+        if (!gl.getShaderParameter(vShader, gl.COMPILE_STATUS)) {
+          console.error(
+            "----->>>vShader 编译错误:",
+            gl.getShaderInfoLog(vShader)
+          );
+        }
+        //片元着色器
+        let fShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fShader, FSHADER_SOURCE);
+        gl.compileShader(fShader);
+
+        if (!gl.getShaderParameter(fShader, gl.COMPILE_STATUS)) {
+          console.error(
+            "----->>>fShader 编译错误:",
+            gl.getShaderInfoLog(fShader)
+          );
+        }
+
+        // 2. 连接
+        // 每一个shader必须和webgl的program连接。
+        const shaderProgram = gl.createProgram();
+        // 添加预先存在的着色器
+        gl.attachShader(shaderProgram, vShader);
+        gl.attachShader(shaderProgram, fShader);
+
+        gl.linkProgram(shaderProgram);
+
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+          console.error(
+            "------>>>着色器链接失败: " + gl.getProgramInfoLog(shaderProgram)
+          );
+        }
+
+        // 3. 使用
+        gl.useProgram(shaderProgram);
+
+        gl.clearColor(0, 0, 0, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        // 4. 绘图
+        gl.drawArrays(gl.POINTS, 0, 1);
+
+        console.log(gl);
+      }
+    </script>
+  </body>
+</html>

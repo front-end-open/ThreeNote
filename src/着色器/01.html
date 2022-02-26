@@ -1,0 +1,41 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2022-02-21 22:44:24
+ * @LastEditors: wangshan
+ * @LastEditTime: 2022-02-22 00:30:02
+ * @Description: base
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>threejs-base</title>
+  </head>
+  <body>
+    <!-- <canvas id="panel"></canvas> -->
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="../../js//Editor.js"></script>
+    <script>
+      let initEditor = new window.Editor(THREE);
+      console.log(initEditor);
+      // 加入模型
+      let gemotry = new THREE.BoxGeometry(100, 100, 100);
+      let materail = new THREE.MeshPhongMaterial({
+        color: "0x888888",
+        wireframe: true,
+        wireframeLinecap: "butt",
+      });
+      materail.flatShadin = true;
+      let mesh = new THREE.Mesh(gemotry, materail);
+      initEditor._global.scene.add(mesh);
+      initEditor.injectHelper(THREE, {
+        ambient: new THREE.GridHelper(1000, 10),
+        axies: new THREE.AxesHelper(5000),
+      });
+      initEditor.render();
+    </script>
+  </body>
+</html>

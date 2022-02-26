@@ -1,0 +1,175 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2022-02-12 01:59:44
+ * @LastEditors: wangshan
+ * @LastEditTime: 2022-02-13 00:45:31
+ * @Description: 加载外部json模型文件
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>加载外部json模型文件</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <canvas id="panel"></canvas>
+    <script>
+      // 初始化纹理坐标
+      let uv0 = new THREE.Vector2(0, 1);
+      let uv1 = new THREE.Vector2(0, 0);
+      let uv2 = new THREE.Vector2(1, 0);
+      let uv3 = new THREE.Vector2(1, 1);
+
+      // 获取三角形面像素纹理
+      let face1 = [uv0, uv1, uv3];
+      let face2 = [uv1, uv2, uv3];
+
+      let panel = document.getElementById("panel");
+
+      let renderer = new THREE.WebGLRenderer({
+        canvas: panel,
+      });
+      renderer.setClearColor(0xcccccc);
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+
+      let camera = new THREE.PerspectiveCamera(
+        100,
+        window.innerWidth / window.innerHeight,
+        1,
+        2000
+      );
+
+      let scene = new THREE.Scene();
+
+      camera.position.set(100, 100, 100); // 设置相机本地坐标系所在位置
+      camera.lookAt(new THREE.Vector3(100, 100, 0)); // 设置相机观察方向, 世界坐标系
+      scene.add(camera);
+
+      var geometry = new THREE.BufferGeometry(); //声明一个空几何体对象
+      //类型数组创建顶点位置position数据
+      var vertices = new Float32Array([
+        0,
+        0,
+        0, //顶点1坐标
+        100,
+        0,
+        0, //顶点2坐标
+        100,
+        100,
+        0, //顶点3坐标
+        0,
+        100,
+        0, //顶点4坐标
+      ]);
+      // 创建属性缓冲区对象
+      var attribue = new THREE.BufferAttribute(vertices, 3); //3个为一组
+      // 设置几何体attributes属性的位置position属性
+      geometry.attributes.position = attribue;
+      var normals = new Float32Array([
+        0,
+        0,
+        1, //顶点1法向量
+        0,
+        0,
+        1, //顶点2法向量
+        0,
+        0,
+        1, //顶点3法向量
+        0,
+        0,
+        1, //顶点4法向量
+      ]);
+
+      // 设置几何体attributes属性的位置normal属性
+      geometry.attributes.normal = new THREE.BufferAttribute(normals, 3); //3个为一组,表示一个顶点的xyz坐标
+      // Uint16Array类型数组创建顶点索引数据
+      var indexes = new Uint16Array([0, 1, 2, 0, 2, 3]);
+      // 索引数据赋值给几何体的index属性
+      geometry.index = new THREE.BufferAttribute(indexes, 1); //1个为一组
+      /**纹理坐标*/
+      var uvs = new Float32Array([
+        0,
+        0, //图片左下角
+        1,
+        0, //图片右下角
+        1,
+        1, //图片右上角
+        0,
+        1, //图片左上角
+      ]);
+      // 设置几何体attributes属性的位置normal属性
+      geometry.attributes.uv = new THREE.BufferAttribute(uvs, 2); //2个为一组,表示一个顶点的纹理坐标
+
+      let textureLoader = new THREE.TextureLoader();
+      textureLoader.load(
+        "./static/earth.jpeg",
+        (texture) => {
+          let material = new THREE.MeshLambertMaterial({
+            map: texture,
+            side: THREE.DoubleSide,
+          });
+          let mesh = new THREE.Mesh(geometry, material);
+          scene.add(mesh);
+
+          mesh.rotateX(Math.PI / 2);
+
+          scene.add(mesh);
+
+          let faces = geometry.index.count / 3; // 获取三角形面
+          let uvGetters = new THREE.Vector2();
+          let uvs = geometry.getAttribute("uv");
+          console.log(faces);
+          let face1 = new THREE.Vector2();
+
+          for (let i = 0; i < faces; i++) {
+            // a.fromBufferAttribute(pos, index.array[i * 3 + 0]);
+            // b.fromBufferAttribute(pos, index.array[i * 3 + 1]);
+            // c.fromBufferAttribute(pos, index.array[i * 3 + 2]);
+            let a = face1.fromBufferAttribute(
+              uvs,
+              geometry.index.array[i * 1 + 0]
+            );
+            console.log(a);
+          }
+
+          console.log(geometry.getAttribute("uv2"));
+
+          render();
+        },
+        null,
+        (e) => {
+          console.log(e);
+        }
+      );
+
+      //   let material = new THREE.MeshLambertMaterial({
+      //     color: 0xffff00,
+      //     side: THREE.DoubleSide,
+      //   });
+
+      console.log(geometry);
+
+      const gridHelper = new THREE.GridHelper(200, 4, 0x000000, 0x888888);
+      scene.add(gridHelper);
+
+      let ambientLight = new THREE.AmbientLight(0xffffff);
+      scene.add(ambientLight);
+
+      const axesHelper = new THREE.AxesHelper(600);
+      scene.add(axesHelper);
+
+      function render() {
+        renderer.render(scene, camera);
+      }
+
+      render();
+
+      let controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.addEventListener("change", render);
+    </script>
+  </body>
+</html>

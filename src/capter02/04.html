@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2021-10-20 17:29:39
  * @LastEditors: wangshan
- * @LastEditTime: 2021-10-21 14:48:08
+ * @LastEditTime: 2021-12-14 22:28:49
  * @Description: 顶点法向量数据光照计算
 -->
 <!DOCTYPE html>
@@ -34,9 +34,11 @@
       let point = new THREE.PointLight(0xffffff);
       point.position.set(600, 300, 400);
       scene.add(point);
-      let ambient = new THREE.AmbientLight(0x444444);
+      let point2 = new THREE.PointLight(0xffffff);
+      point2.position.set(-600, -300, -400);
+      scene.add(point2);
+      let ambient = new THREE.AmbientLight(0xbb7777);
       scene.add(ambient);
-
       let renderer = new THREE.WebGLRenderer(); // 渲染器
 
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -122,39 +124,18 @@
       // 面模型
       // 三角面(网格)渲染模式
       // 材质设置
-      let material = new THREE.MeshBasicMaterial({
-        color: 0x0000ff, //三角面颜色
-        side: THREE.DoubleSide, //两面可见
+
+      // 该材质不受光照影响
+      //   let material = new THREE.MeshBasicMaterial({
+      //     // color: 0x0000ff, //三角面颜色
+      //     side: THREE.DoubleSide, //两面可见
+      //   });
+      let material = new THREE.MeshPhongMaterial({
+        vertexColors: true,
+        side: THREE.DoubleSide,
       });
       let mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
-      // 使用面模型实现插值计算, 渐变效果
-      //   let material = new THREE.MeshBasicMaterial({
-      //     vertexColors: THREE.VertexColors,
-      //     side: THREE.DoubleSide, //两面可见
-      //   });
-      //   let mesh = new THREE.Mesh(geometry, material);
-      //   scene.add(mesh);
-
-      // 点模型
-      // 如果把材质属性.vertexColors的值设置为THREE.VertexColors,threejs渲染模型的时候就会使用几何体的顶点颜色数据geometry.attributes.color。
-      let material2 = new THREE.PointsMaterial({
-        // 使用定点颜色数据模型, 不需要在定义color
-        // color: 0xff0000,
-        vertexColors: THREE.VertexColors, // 以顶点颜色为准, 使用顶点着色
-        size: 5.0, // 点像素尺寸
-      });
-
-      let points = new THREE.Points(geometry, material2);
-      scene.add(points);
-
-      // 线模型
-      //   let linematerial = new THREE.LineBasicMaterial({
-      //     color: 0xff0000,
-      //   });
-
-      //   let line = new THREE.Line(geometry, linematerial);
-      //   scene.add(line);
 
       // 辅助对象
       let axesHelper = new THREE.AxesHelper(200);

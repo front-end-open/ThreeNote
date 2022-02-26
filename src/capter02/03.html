@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2021-10-20 16:17:52
  * @LastEditors: wangshan
- * @LastEditTime: 2021-10-20 17:24:41
+ * @LastEditTime: 2021-12-14 00:38:56
  * @Description: 几何体定点颜色数据
 -->
 <!DOCTYPE html>
@@ -82,16 +82,22 @@
       geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
       // 设置几何体attributes属性的颜色属性
       geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+      // 点模型
+
+      // 如果把材质属性.vertexColors的值设置为THREE.VertexColors,threejs渲染模型的时候就会使用几何体的顶点颜色数据geometry.attributes.color。
+      // color原本用来设置材质的颜色，现在采用vertexColors属性来设置模型颜色。
+      let material2 = new THREE.PointsMaterial({
+        // 使用定点颜色数据模型, 不需要在定义color
+        // color: 0xff0000,
+        vertexColors: THREE.VertexColors, // 以顶点颜色为准, 使用顶点着色; 或者设置为boolean启用顶点颜色数据.
+        size: 10.0, // 点像素尺寸
+      });
+      console.log(material2);
+      let points = new THREE.Points(geometry, material2);
+      scene.add(points);
+
       // 面模型
-      // 三角面(网格)渲染模式
-      // 材质设置
-      //   let material = new THREE.MeshBasicMaterial({
-      //     color: 0x0000ff, //三角面颜色
-      //     side: THREE.DoubleSide, //两面可见
-      //   });
-      //   let mesh = new THREE.Mesh(geometry, material);
-      //   scene.add(mesh);
-      // 使用面模型实现插值计算, 渐变效果
       let material = new THREE.MeshBasicMaterial({
         vertexColors: THREE.VertexColors,
         side: THREE.DoubleSide, //两面可见
@@ -99,25 +105,13 @@
       let mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
 
-      // 点模型
-      // 如果把材质属性.vertexColors的值设置为THREE.VertexColors,threejs渲染模型的时候就会使用几何体的顶点颜色数据geometry.attributes.color。
-      let material2 = new THREE.PointsMaterial({
-        // 使用定点颜色数据模型, 不需要在定义color
-        // color: 0xff0000,
-        vertexColors: THREE.VertexColors, // 以顶点颜色为准, 使用顶点着色
-        size: 5.0, // 点像素尺寸
+      // 线模型
+      let linematerial = new THREE.LineBasicMaterial({
+        vertexColors: true,
       });
 
-      let points = new THREE.Points(geometry, material2);
-      scene.add(points);
-
-      // 线模型
-      //   let linematerial = new THREE.LineBasicMaterial({
-      //     color: 0xff0000,
-      //   });
-
-      //   let line = new THREE.Line(geometry, linematerial);
-      //   scene.add(line);
+      let line = new THREE.Line(geometry, linematerial);
+      scene.add(line);
 
       // 辅助对象
       let axesHelper = new THREE.AxesHelper(200);
@@ -135,6 +129,12 @@
         requestAnimationFrame(render);
       }
       render();
+      /**
+       * 总结: 如果将几何体作为线面模型渲染.此时采用顶点颜色数据的几何体，会发生颜色渐变。
+       * 要实现渐变需要在材质上也启用顶点颜色数据属性vertexColors
+       * 颜色插值计算简单点说，比如一条直线的端点1设置为红色，端点2设置为蓝色，整条直线就会呈现出从点1到红色点2的蓝色颜色渐变，
+       * 对于网格模型Mesh而言，就是三角形的三个顶点分别设置一个颜色，三角形内部的区域像素会根据三个顶点的颜色进行插值计算。
+       */
     </script>
   </body>
 </html>

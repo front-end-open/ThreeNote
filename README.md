@@ -1,3 +1,1 @@
-# threejsDone
-
-一个 threejs 自习外附教程的仓库
+## 练习 demo
