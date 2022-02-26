@@ -1,0 +1,110 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2022-02-27 01:48:50
+ * @LastEditors: wangshan
+ * @LastEditTime: 2022-02-27 02:12:32
+ * @Description: 改变绘制点的颜色
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>改变绘制点的颜色</title>
+  </head>
+  <body onload="main()">
+    <canvas id="glwebgl" width="1000" height="1000">浏览器不支持canvas</canvas>
+    <script src="../../js/helper/helper.js"></script>
+    <script>
+      let VSHADER_SOURCE =
+        "attribute vec4 a_Position;\n" +
+        "void main() {\n" +
+        "gl_Position = a_Position;\n" + // 复制attribute变量给gl_Position
+        "gl_PointSize = 10.0;\n" + // 设置尺寸
+        "}\n";
+
+      let FSHADER_SOURCE =
+        "precision mediump float;\n" +
+        "uniform vec4 u_FragColor;\n" + // 赋值uniform变脸到gl_FragColor
+        "void main() {\n" +
+        "gl_FragColor = u_FragColor;\n" + // 设置颜色
+        "}\n";
+
+      function main() {
+        let canvas = document.getElementById("glwebgl");
+        let gl = canvas.getContext("webgl");
+
+        if (!gl) {
+          console.warn("浏览器不支持webgl绘图");
+          return;
+        }
+
+        if (!initShader(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+          console.log("着色器初始化失败");
+          return;
+        }
+
+        // 获取点的本地坐标变量
+        let a_Position = gl.getAttribLocation(gl.program, "a_Position");
+        console.log(a_Position);
+        if (a_Position < 0) {
+          console.warn("获取a_Position本地变量失败");
+          return;
+        }
+
+        // 获取点片元变量
+        let u_FragColor = gl.getUniformLocation(gl.program, "u_FragColor");
+        console.log(u_FragColor);
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+        // 注册鼠标按下事件
+        let g_points = []; // 鼠标点击位置数组
+        let g_colors = []; // 存储点颜色数组
+        canvas.onmousedown = (ev) => {
+          console.log(ev);
+          // 获取鼠标点击位置
+          let x = ev.clientX,
+            y = ev.clientY;
+
+          let rect = ev.target.getBoundingClientRect(); // 获取canvas尺寸和相对viewport位置
+          console.log(rect);
+
+          // 核心
+          x = (x - rect.left - canvas.height / 2) / (canvas.height / 2);
+          y = (canvas.width / 2 - (y - rect.top)) / (canvas.width / 2);
+
+          // 存储坐标到g_points中
+          g_points.push([x, y]);
+
+          // 存储点颜色到数组
+          if (x >= 0.0 && y >= 0.0) {
+            // 第一象限
+            g_colors.push([1.0, 0.0, 0.0, 1.0]); // 红色
+          } else if (x < 0.0 && y < 0.0) {
+            // 第三象限
+            g_colors.push([0.0, 1.0, 0.0, 1.0]); // 绿色
+          } else {
+            // 其他
+            g_colors.push([1.0, 1.0, 1.0, 1.0]); // 白色
+          }
+
+          gl.clear(gl.COLOR_BUFFER_BIT); // 从新清空canvas背景在于，每次绘制结束后，webgl会重置颜色缓冲区默认背景(0.0, 0.0, 0.0, 0.0), 黑色纯透明。看到的结果就是白色。
+
+          let len = g_points.length;
+          for (let i = 0; i < len; i++) {
+            let xy = g_points[i],
+              rgba = g_colors[i];
+
+            gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
+            gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+
+            gl.drawArrays(gl.POINTS, 0, 1);
+          }
+        };
+        gl.clear(gl.COLOR_BUFFER_BIT);
+      }
+    </script>
+  </body>
+</html>

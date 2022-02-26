@@ -1,0 +1,86 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2022-02-26 23:41:13
+ * @LastEditors: wangshan
+ * @LastEditTime: 2022-02-27 01:47:43
+ * @Description: 通过鼠标绘制
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>通过鼠标绘制</title>
+  </head>
+  <body onload="main()">
+    <canvas id="glwebgl" width="1000" height="1000">浏览器不支持canvas</canvas>
+    <script src="../../js/helper/helper.js"></script>
+    <script>
+      let VSHADER_SOURCE =
+        "attribute vec4 a_Position;\n" +
+        "void main() {\n" +
+        "gl_Position = a_Position;\n" + // 复制attribute变量给gl_Position
+        "gl_PointSize = 10.0;\n" + // 设置尺寸
+        "}\n";
+
+      let FSHADER_SOURCE =
+        "void main() {\n" +
+        "gl_FragColor = vec4(0.0, 1.0, 0.0, 0.5);\n" + // 设置颜色
+        "}\n";
+
+      function main() {
+        let canvas = document.getElementById("glwebgl");
+        let gl = canvas.getContext("webgl");
+
+        if (!gl) {
+          console.warn("浏览器不支持webgl绘图");
+          return;
+        }
+
+        if (!initShader(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+          console.log("着色器初始化失败");
+          return;
+        }
+
+        let a_Position = gl.getAttribLocation(gl.program, "a_Position");
+        console.log(a_Position);
+        if (a_Position < 0) {
+          console.warn("获取a_Position本地变量失败");
+          return;
+        }
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+        // 注册鼠标按下事件
+        let g_points = []; // 鼠标点击位置数组
+        canvas.onmousedown = (ev) => {
+          console.log(ev);
+          // 获取鼠标点击位置
+          let x = ev.clientX,
+            y = ev.clientY;
+
+          let rect = ev.target.getBoundingClientRect(); // 获取canvas尺寸和相对viewport位置
+          console.log(rect);
+
+          // 核心
+          x = (x - rect.left - canvas.height / 2) / (canvas.height / 2);
+          y = (canvas.width / 2 - (y - rect.top)) / (canvas.width / 2);
+
+          // 存储坐标到g_points中
+          g_points.push(x);
+          g_points.push(y);
+
+          gl.clear(gl.COLOR_BUFFER_BIT); // 从新清空canvas背景在于，每次绘制结束后，webgl会重置颜色缓冲区默认背景(0.0, 0.0, 0.0, 0.0), 黑色纯透明。看到的结果就是白色。
+
+          let len = g_points.length;
+          for (let i = 0; i < len; i += 2) {
+            gl.vertexAttrib3f(a_Position, g_points[i], g_points[i + 1], 0.0);
+            gl.drawArrays(gl.POINTS, 0, 1);
+          }
+        };
+        gl.clear(gl.COLOR_BUFFER_BIT);
+      }
+    </script>
+  </body>
+</html>

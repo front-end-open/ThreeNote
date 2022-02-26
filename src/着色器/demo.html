@@ -1,0 +1,57 @@
+<!--
+ * @Author: wangshan
+ * @Date: 2022-02-27 00:47:33
+ * @LastEditors: wangshan
+ * @LastEditTime: 2022-02-27 01:17:26
+ * @Description: 
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>鼠标跟随鼠标</title>
+    <style>
+      body,
+      html {
+        width: 100%;
+        height: 100%;
+      }
+      div {
+        width: 200px;
+        height: 200px;
+        background-color: red;
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="box"></div>
+    <script>
+      let dragBox = document.getElementById("box");
+      dragBox.onmousedown = function (e) {
+        console.log("鼠标按下", e);
+        // 解除事件
+        let drag = e.target;
+        console.log(e.target);
+        let boxLeft = e.target.getBoundingClientRect().left;
+        let boxTop = e.target.getBoundingClientRect().top;
+        console.log(boxLeft, boxTop);
+        dragBox.onmousemove = function (e) {
+          console.log("鼠标移动");
+          //   boxLeft = e.target.getBoundingClientRect().left;
+          //   boxTop = e.target.getBoundingClientRect().top;
+
+          drag.style.left =
+            e.clientX - boxLeft - dragBox.clientWidth / 2 + "px";
+          drag.style.top = e.clientY - boxTop - dragBox.clientHeight / 2 + "px";
+        };
+        dragBox.onmouseup = function (e) {
+          console.log("鼠标松开", e);
+          dragBox.onmousemove = null;
+        };
+      };
+    </script>
+  </body>
+</html>
