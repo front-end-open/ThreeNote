@@ -11,6 +11,6 @@
   "dependencies": {
     "express": "^4.17.3",
     "stats.js": "^0.17.0",
-    "three": "^0.137.5"
+    "three": "^0.138.0"
   }
 }

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<!-- saved from url=(0088)https://hofk.de/main/discourse.threejs/2022/BufferGeometry/BufferGeometryNonIndexed.html -->
+<html><script>
+(() => {
+/**
+ * This script injected by the installed three.js developer
+ * tools extension.
+ * https://github.com/threejs/three-devtools
+ */
+
+const $devtoolsReady = Symbol('devtoolsReady');
+const $backlog = Symbol('backlog');
+
+// The __THREE_DEVTOOLS__ target is small and light-weight, and collects
+// events triggered until the devtools panel is ready, which is when
+// the events are flushed.
+const target = new class ThreeDevToolsTarget extends EventTarget {
+  constructor() {
+    super();
+    this[$devtoolsReady] = false;
+    this[$backlog] = [];
+    this.addEventListener('devtools-ready', e => {
+      this[$devtoolsReady] = true;
+      for (let event of this[$backlog]) {
+        this.dispatchEvent(event);
+      }
+    }, { once: true });
+  }
+
+  dispatchEvent(event) {
+    if (this[$devtoolsReady] || event.type === 'devtools-ready') {
+      super.dispatchEvent(event);
+    } else {
+      this[$backlog].push(event);
+    }
+  }
+}
+
+Object.defineProperty(window, '__THREE_DEVTOOLS__', {
+  value: target,
+});
+})();
+</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title> BufferGeometryNonIndexed </title>
+	
+</head>
+<body>
+	very simple BufferGeometry NonIndexed (triangle soup)
+	<div id="container"><canvas data-engine="three.js r136" width="2560" height="1272" style="display: block; width: 2560px; height: 1272px;"></canvas></div> 
+
+
+<script type="module">
+
+// @author hofk
+
+import * as THREE from '../jsm/three.module.136.js';
+import {OrbitControls} from '../jsm/OrbitControls.136.js';
+    
+const container = document.getElementById( 'container' );
+
+const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 3500 );
+camera.position.y = 50;
+camera.position.z = 500;
+
+const scene = new THREE.Scene();
+scene.add( new THREE.AmbientLight( 0x444444 ) );
+
+const renderer = new THREE.WebGLRenderer( { antialias: true } );
+
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setClearColor( 0x888888, 1 );	
+
+container.appendChild( renderer.domElement );
+
+const  light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
+light1.position.set( 1, 1, 1 );
+scene.add( light1 );
+
+const  light2 = new THREE.DirectionalLight( 0xffffff, 1.5 );
+light2.position.set( 0, -1, 0 );
+scene.add( light2 );
+
+const  triangles = 2;
+
+const  geometry = new THREE.BufferGeometry();
+
+const positions = new Float32Array( triangles * 3 * 3 );  // buffer arrray, position of vertices
+const colors = new Float32Array( triangles * 3 * 3 );	// buffer arrray, vertexColors
+
+	// 4 positions  ...
+	
+	const ax = 0;
+	const ay = 0;
+	const az = 0;
+
+	const bx = 100;
+	const by = 0;
+	const bz = 100;
+
+	const cx = 0;
+	const cy = 0;
+	const cz = 100;
+
+	const dx = 0;
+	const dy = 100;
+	const dz = 50;
+
+	// ... some positions are needed several times
+	
+	// first triangle
+	positions[ 0 ] = ax;
+	positions[ 1 ] = ay;
+	positions[ 2 ] = az;
+
+	positions[ 3 ] = bx;
+	positions[ 4 ] = by;
+	positions[ 5 ] = bz;
+
+	positions[ 6 ] = cx;
+	positions[ 7 ] = cy;
+	positions[ 8 ] = cz;
+	
+  	// second triangle
+    positions[ 9 ] = ax;
+	positions[ 10 ] = ay;
+	positions[ 11 ] = az;
+
+	positions[ 12 ] = bx;
+	positions[ 13 ] = by;
+	positions[ 14 ] = bz;
+
+	positions[ 15 ] = dx;
+	positions[ 16 ] = dy;
+	positions[ 17 ] = dz;
+  
+	// vertex colors
+	
+	// first triangle
+	colors[ 0]  = 0.9;
+	colors[ 1 ] = 0.9;
+	colors[ 2 ] = 0.0;
+
+	colors[ 3 ] = 0.9;
+	colors[ 4 ] = 0.9;
+	colors[ 5 ] = 0.0;
+
+	colors[ 6 ] = 0.9;
+	colors[ 7 ] = 0.9;
+	colors[ 8 ] = 0.0;
+	
+	// second triangle
+	colors[ 9]  = 1;
+	colors[ 10 ] = 0;
+	colors[ 11 ] = 0;
+
+	colors[ 12 ] = 0;
+	colors[ 13 ] = 1;
+	colors[ 14 ] = 0;
+
+	colors[ 15 ] = 0;
+	colors[ 16 ] = 0;
+	colors[ 17 ] = 1;
+
+geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ));
+geometry.setAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+const material = new THREE.MeshBasicMaterial( { vertexColors: THREE.VertexColors,	side: THREE.DoubleSide } );
+
+const mesh = new THREE.Mesh( geometry, material );
+scene.add( mesh );
+
+// ---------------------------------------------------------------
+
+const uvTex	= new THREE.TextureLoader().load( "uvgrid01.png" );
+const material01 = new THREE.MeshBasicMaterial( {  map: uvTex,   side: THREE.DoubleSide, } );	//   uv grid
+
+const geometry01 = new THREE.BufferGeometry();
+
+const vertices = new Float32Array( [
+   -50, -50,  50,
+	50, -50,  50,
+	50,  50,  50,
+
+	 50,  50, 50,
+	-50,  50, 50,
+	-50, -50, 50
+] );
+const uvs = new Float32Array( [
+	0,   0,
+	1,   0, 
+	1,   1, 
+
+	1,   1, 
+	0,   1, 
+	0,   0
+] );
+
+geometry01.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+geometry01.setAttribute( 'uv', new THREE.BufferAttribute( uvs, 2 ) );
+
+const mesh01 = new THREE.Mesh( geometry01, material01 );
+
+scene.add( mesh01 );
+ 
+animate();
+
+function animate() {
+
+	requestAnimationFrame( animate );
+	const time = Date.now() * 0.001;
+	mesh.rotation.y = time;
+	mesh01.rotation.z = time;
+	renderer.render( scene, camera );
+
+}
+
+</script>
+
+<div style="position: static; width: 0px; height: 0px; border: none; padding: 0px; margin: 0px;"><div id="trans-tooltip"><div id="tip-left-top" style="background: url(&quot;chrome-extension://ccfjcepmiaackkccabgeeegeklgifffd/imgs/map/tip-left-top.png&quot;);"></div><div id="tip-top" style="background: url(&quot;chrome-extension://ccfjcepmiaackkccabgeeegeklgifffd/imgs/map/tip-top.png&quot;) repeat-x;"></div><div id="tip-right-top" style="background: url(&quot;chrome-extension://ccfjcepmiaackkccabgeeegeklgifffd/imgs/map/tip-right-top.png&quot;);"></div><div id="tip-right" style="background: url(&quot;chrome-extension://ccfjcepmiaackkccabgeeegeklgifffd/imgs/map/tip-right.png&quot;) repeat-y;"></div><div id="tip-right-bottom" style="background: url(&quot;chrome-extension://ccfjcepmiaackkccabgeeegeklgifffd/imgs/map/tip-right-bottom.png&quot;);"></div><div id="tip-bottom" style="background: url(&quot;chrome-extension://ccfjcepmiaackkccabgeeegeklgifffd/imgs/map/tip-bottom.png&quot;) repeat-x;"></div><div id="tip-left-bottom" style="background: url(&quot;chrome-extension://ccfjcepmiaackkccabgeeegeklgifffd/imgs/map/tip-left-bottom.png&quot;);"></div><div id="tip-left" style="background: url(&quot;chrome-extension://ccfjcepmiaackkccabgeeegeklgifffd/imgs/map/tip-left.png&quot;);"></div><div id="trans-content"></div></div><div id="tip-arrow-bottom" style="background: url(&quot;chrome-extension://ccfjcepmiaackkccabgeeegeklgifffd/imgs/map/tip-arrow-bottom.png&quot;);"></div><div id="tip-arrow-top" style="background: url(&quot;chrome-extension://ccfjcepmiaackkccabgeeegeklgifffd/imgs/map/tip-arrow-top.png&quot;);"></div></div><iframe src="./BufferGeometryNonIndexed_files/sources.html" allow="camera" style="display: none;"></iframe><iframe src="./BufferGeometryNonIndexed_files/audiosources.html" allow="microphone" style="display: none;"></iframe></body></html>

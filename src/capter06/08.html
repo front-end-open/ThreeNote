@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2022-02-11 00:04:50
  * @LastEditors: wangshan
- * @LastEditTime: 2022-02-12 01:01:40
+ * @LastEditTime: 2022-03-01 01:13:45
  * @Description:  纹理坐标修改
 -->
 <!DOCTYPE html>
@@ -17,6 +17,7 @@
   </head>
   <body>
     <canvas id="panel"></canvas>
+    <h1>(-102, 51, 0)</h1>
     <script>
       let panel = document.getElementById("panel");
 
@@ -27,7 +28,7 @@
       renderer.setSize(window.innerWidth, window.innerHeight, false);
 
       let camera = new THREE.PerspectiveCamera(
-        100,
+        75,
         window.innerWidth / window.innerHeight,
         1,
         2000
@@ -40,7 +41,7 @@
       scene.add(camera);
 
       // 添加模型
-      let geometry = new THREE.PlaneGeometry(200, 200, 4, 4);
+      let geometry = new THREE.PlaneGeometry(204, 102, 4, 4);
       let textureLoader = new THREE.TextureLoader();
 
       textureLoader.load(
@@ -49,6 +50,7 @@
           let material = new THREE.MeshLambertMaterial({
             map: texture,
             side: THREE.DoubleSide,
+            // wireframe: true,
           });
           let planmesh = new THREE.Mesh(geometry, material);
           planmesh.rotateX(Math.PI / 2);
@@ -60,12 +62,25 @@
           let uvGetter = new THREE.Vector2();
 
           // 同一更新纹理坐标
-          for (let i = 0; i < uvs.count; i++) {
-            let currentuv = uvGetter.fromBufferAttribute(uvs, i).set(0.4, 0.4);
-            uvs.setXY(i, currentuv.x, currentuv.y);
-          }
+          //   for (let i = 0; i < uvs.count; i += 2) {
+          //     let currentuv = uvGetter.fromBufferAttribute(uvs, i).set(0.4, 0.4);
+          //     uvs.setXY(i, currentuv.x, currentuv.y);
+          //   }
+          let face101 = uvGetter.fromBufferAttribute(uvs, 0).set(0, 0);
+          uvs.setXY(0, face101.x, face101.y);
+          let face102 = uvGetter.fromBufferAttribute(uvs, 1).set(1, 0);
+          uvs.setXY(1, face102.x, face102.y);
+          let face103 = uvGetter.fromBufferAttribute(uvs, 10).set(1, 1);
+          uvs.setXY(10, face103.x, face103.y);
+          console.log(uvGetter);
+          //   let face201 = uvGetter.fromBufferAttribute(uvs, 0).set(0, 0);
+          //   uvs.setXY(0, face201.x, face201.y);
+          //   let face202 = uvGetter.fromBufferAttribute(uvs, 1).set(1, 0);
+          //   uvs.setXY(0, face202.x, face202.y);
+          //    let face203 = uvGetter.fromBufferAttribute(uvs, 10).set(1, 1);
+          //   uvs.setXY(0, face203.x, face203.y);
 
-          console.log(geometry);
+          console.log(geometry, planmesh);
 
           // 加载成功过后，从新调用render渲染
           render();
