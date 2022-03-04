@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2022-02-26 18:33:27
  * @LastEditors: wangshan
- * @LastEditTime: 2022-02-26 19:15:00
+ * @LastEditTime: 2022-03-04 23:31:27
  * @Description:
  */
 ((global) => {
@@ -52,5 +52,19 @@
     return true;
   }
 
+  // 注入提示文案
+  function injectText(text) {
+    let h1 = document.createElement("h1");
+    h1.style.color = "red";
+
+    h1.style.position = "absolute";
+    h1.style.left = 0;
+    h1.style.top = 0;
+    h1.innerHTML = text;
+
+    document.body.appendChild(h1);
+  }
+
   global.initShader = initShader;
+  global.injectText = injectText;
 })(window);

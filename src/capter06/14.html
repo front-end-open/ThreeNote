@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2022-03-02 00:16:06
  * @LastEditors: wangshan
- * @LastEditTime: 2022-03-02 00:16:06
+ * @LastEditTime: 2022-03-05 02:25:11
  * @Description: 纹理对象操作
 -->
 <!DOCTYPE html>
@@ -11,7 +11,65 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>纹理对象操作</title>
+    <title>纹理对象操作-纹理阵列</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="../../js/Editor.js"></script>
+    <style>
+      canvas {
+        cursor: pointer;
+      }
+    </style>
   </head>
-  <body></body>
+  <body>
+    <script src="../../js/helper/helper.js"></script>
+    <script>
+      injectText("红色代表 X 轴. 绿色代表 Y 轴. 蓝色代表 Z 轴.");
+      let editor = new Editor(THREE);
+      let geometry = new THREE.BoxGeometry(100, 100, 100);
+
+      // 纹理对象控制
+      // 设置纹理贴图的包裹模式
+      // 设置属性, wrapS(水平排布), wrapT(垂直排布)
+      let texture = new THREE.TextureLoader().load("./static/earth.jpeg");
+      // 设置纹理阵列映射， 纹理将简单地重复到无穷大
+      console.log(texture, texture.wrapS);
+      //   texture.wrapS = THREE.RepeatWrapping;        // 纹理延伸时，单纯的重复，没有镜像效果.
+      //   texture.wrapT = THREE.RepeatWrapping;
+      texture.wrapS = THREE.MirroredRepeatWrapping; // 纹理延伸时，会有镜像效果
+      texture.wrapT = THREE.MirroredRepeatWrapping;
+      // uv两个方向纹理重复数量
+      texture.repeat.set(4, 2);
+
+      let material = new THREE.MeshBasicMaterial({
+        map: texture,
+      });
+      let mesh = new THREE.Mesh(geometry, material);
+      editor.globals.scene.add(mesh);
+
+      // 添加辅助对象
+      const length = 200;
+
+      const origin = new THREE.Vector3(0, 0, 0);
+      const dirX = new THREE.Vector3(10, 0, 0);
+      const dirY = new THREE.Vector3(0, 10, 0);
+      const dirZ = new THREE.Vector3(0, 0, 10);
+      editor.injectHelper({
+        girdhelper: new THREE.GridHelper(500, 10),
+        // axeshlper: new THREE.AxesHelper(1000),
+        arrowXHelper: new THREE.ArrowHelper(dirX, origin, length, 0xff0000),
+        arrowYHelper: new THREE.ArrowHelper(dirY, origin, length, 0x00ff00),
+        arrowZHelper: new THREE.ArrowHelper(dirZ, origin, length, 0x0000ff),
+      });
+
+      console.log(editor.globals);
+
+      function animate() {
+        editor.render();
+        geometry.rotateX(Math.PI / 100);
+        requestAnimationFrame(animate);
+      }
+      animate();
+    </script>
+  </body>
 </html>

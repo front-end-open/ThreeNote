@@ -1,0 +1,78 @@
+<!--
+ * @LastEditTime: 2022-03-05 03:05:20
+ * @Description: 
+ * @Date: 2022-03-05 02:24:31
+ * @Author: wangshan
+ * @LastEditors: wangshan
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>纹理贴图偏移</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="../../js/Editor.js"></script>
+    <style>
+      canvas {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="../../js/helper/helper.js"></script>
+    <script>
+      injectText("红色代表 X 轴. 绿色代表 Y 轴. 蓝色代表 Z 轴.");
+      let editor = new Editor(THREE);
+      let geometry = new THREE.BoxGeometry(100, 100, 100);
+
+      // 设置纹理贴图的包裹模式
+      // 纹理对象控制-偏移控制
+
+      // 设置属性, wrapS(水平排布), wrapT(垂直排布)
+      let texture = new THREE.TextureLoader().load("./static/earth.jpeg");
+      console.log(texture);
+      // 设置纹理阵列, 同时设置偏移
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(2, 2);
+      // 纹理图像将按照单位纹理坐标(1, 1)进行偏移
+      texture.offset = new THREE.Vector2(0.5, 0.5); // 此时图像将在网格上贴图一半
+
+      let material = new THREE.MeshBasicMaterial({
+        map: texture,
+      });
+      let mesh = new THREE.Mesh(geometry, material);
+      editor.globals.scene.add(mesh);
+
+      // 添加辅助对象
+      const length = 200;
+
+      let arrowHelper = new THREE.Group();
+      arrowHelper.name = "arrowHelper";
+      const origin = new THREE.Vector3(0, 0, 0);
+      const dirX = new THREE.Vector3(10, 0, 0);
+      const dirY = new THREE.Vector3(0, 10, 0);
+      const dirZ = new THREE.Vector3(0, 0, 10);
+      arrowHelper.add(new THREE.ArrowHelper(dirX, origin, length, 0xff0000));
+      arrowHelper.add(new THREE.ArrowHelper(dirY, origin, length, 0x00ff00));
+      arrowHelper.add(new THREE.ArrowHelper(dirZ, origin, length, 0x0000ff));
+      editor.injectHelper({
+        girdhelper: new THREE.GridHelper(500, 10),
+        // axeshlper: new THREE.AxesHelper(1000),
+        arrowHelper,
+      });
+
+      //   editor.globals.renderer.dispose();
+
+      function animate() {
+        editor.render();
+        geometry.rotateX(Math.PI / 100);
+        requestAnimationFrame(animate);
+      }
+      animate();
+    </script>
+  </body>
+</html>

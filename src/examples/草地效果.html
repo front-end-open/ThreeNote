@@ -1,0 +1,91 @@
+<!--
+ * @LastEditTime: 2022-03-05 03:57:31
+ * @Description:  草地效果
+ * @Date: 2022-03-05 03:28:53
+ * @Author: wangshan
+ * @LastEditors: wangshan
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>草地效果</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="../../js/Editor.js"></script>
+    <style>
+      canvas {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="../../js/helper/helper.js"></script>
+    <script>
+      injectText("红色代表 X 轴. 绿色代表 Y 轴. 蓝色代表 Z 轴.");
+      let editor = new Editor(THREE);
+      let geometry = new THREE.PlaneGeometry(1000, 1000);
+
+      // 设置纹理贴图的包裹模式
+      // 纹理对象控制-偏移控制
+      // 设置纹理的旋转
+      let loader = new THREE.TextureLoader();
+      loader.load(
+        "./static/grass2.jpeg",
+        function (texture) {
+          // in this example we create the material when the texture is loaded
+          // 设置属性, wrapS(水平排布), wrapT(垂直排布)
+          console.log(texture);
+          // 设置阵列
+          texture.wrapS = THREE.RepeatWrapping;
+          texture.wrapT = THREE.RepeatWrapping;
+          texture.repeat.set(20, 20);
+          texture.needsUpdate = true;
+          let material = new THREE.MeshLambertMaterial({
+            map: texture,
+          });
+          let mesh = new THREE.Mesh(geometry, material);
+          mesh.rotateX(-Math.PI / 2);
+          editor.globals.scene.add(mesh);
+
+          editor.render();
+        },
+
+        // 目前暂不支持onProgress的回调
+        undefined,
+
+        // onError回调
+        function (err) {
+          console.error("An error happened.");
+        }
+      );
+
+      // 添加光源
+      const light = new THREE.AmbientLight(0xffffff); // soft white light
+      editor.globals.scene.add(light);
+
+      // 添加辅助对象
+      const length = 200;
+      let arrowHelper = new THREE.Group();
+      arrowHelper.name = "arrowHelper";
+      const origin = new THREE.Vector3(0, 0, 0);
+      const dirX = new THREE.Vector3(10, 0, 0);
+      const dirY = new THREE.Vector3(0, 10, 0);
+      const dirZ = new THREE.Vector3(0, 0, 10);
+      arrowHelper.add(new THREE.ArrowHelper(dirX, origin, length, 0xff0000));
+      arrowHelper.add(new THREE.ArrowHelper(dirY, origin, length, 0x00ff00));
+      arrowHelper.add(new THREE.ArrowHelper(dirZ, origin, length, 0x0000ff));
+      editor.injectHelper({
+        // girdhelper: new THREE.GridHelper(500, 10),
+        // axeshlper: new THREE.AxesHelper(1000),
+        arrowHelper,
+      });
+      console.log(geometry);
+
+      //   editor.globals.renderer.dispose();
+      editor.render();
+    </script>
+  </body>
+</html>

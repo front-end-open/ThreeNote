@@ -2,23 +2,24 @@
  * @Author: wangshan
  * @Date: 2022-02-21 22:46:26
  * @LastEditors: wangshan
- * @LastEditTime: 2022-02-21 23:46:19
+ * @LastEditTime: 2022-03-05 02:58:00
  * @Description: 场景初始化
  */
 ((global) => {
   class Editor {
     _three = null;
-    _global = {};
+    globals = {};
+    globalsProxy = {};
 
     constructor(THREE) {
       this._three = THREE;
       this.renderer = null;
 
-      //   this._global = { ...this.initEditor(THREE) };
+      //   this.globals = { ...this.initEditor(THREE) };
       this.initEditor(THREE);
     }
     createScene(THREE) {
-      this._global.scene = new THREE.Scene();
+      this.globals.scene = new THREE.Scene();
     }
     createRender(THREE, panel) {
       if (panel) {
@@ -28,11 +29,11 @@
       let renderer = new THREE.WebGLRenderer({
         antialias: true,
       });
-      renderer.setClearColor(0xffffff);
+      renderer.setClearColor(0xcccccc);
       renderer.setSize(window.innerWidth, window.innerHeight, false);
       document.body.appendChild(renderer.domElement);
 
-      this._global.renderer = renderer;
+      this.globals.renderer = renderer;
     }
     createCamera(THREE) {
       let camera = new THREE.PerspectiveCamera(
@@ -44,22 +45,18 @@
 
       camera.position.set(100, 500, 100); // 设置相机所在位置
       camera.lookAt(new THREE.Vector3(0, 0, 0)); // 设置相机观察方向
-      this._global.camera = camera;
-      this._global.scene.add(camera);
+      this.globals.camera = camera;
+      this.globals.scene.add(camera);
     }
-    injectHelper(THREE, helpers) {
-      if (typeof helpers === "bject") {
-        console.warn("helpers 需要时字面对象初始化");
-      }
-
+    injectHelper(helpers) {
       for (let key in helpers) {
-        this._global[key] = this._global.scene.add(helpers[key]);
+        this.globals[key] = this.globals.scene.add(helpers[key]);
       }
     }
     createControl(THREE) {
       let controls = new THREE.OrbitControls(
-        this._global.camera,
-        this._global.renderer.domElement
+        this.globals.camera,
+        this.globals.renderer.domElement
       );
 
       controls.addEventListener("change", () => {
@@ -67,13 +64,36 @@
       });
     }
     render() {
-      this._global.renderer.render(this._global.scene, this._global.camera);
+      //   console.log(this.globals);
+      this.globals.renderer.render(this.globals.scene, this.globals.camera);
     }
     initEditor(THREE) {
       this.createScene(THREE);
       this.createRender(THREE);
       this.createCamera(THREE);
       this.createControl(THREE);
+      this.globals.infos = this.globals.renderer.info;
+      //   this.watch();
+
+      // 调整窗口重置画布尺寸
+      window.addEventListener("resize", () => {
+        this.globals.renderer.setSize(
+          window.innerWidth,
+          window.innerHeight,
+          false
+        );
+        this.globals.camera.aspect = window.innerWidth / window.innerHeight;
+        this.globals.camera.updateProjectionMatrix();
+      });
+    }
+    watch() {
+      //
+      let proxy = new Proxy(this.globals.scene, {
+        set: function (obj, prop, value) {
+          console.log(obj, prop);
+        },
+      });
+      this.globalsProxy = proxy;
     }
   }
 

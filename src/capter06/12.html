@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2022-02-13 01:02:28
  * @LastEditors: wangshan
- * @LastEditTime: 2022-03-02 00:07:16
+ * @LastEditTime: 2022-03-04 23:56:32
  * @Description: 数组材质
 -->
 <!DOCTYPE html>
@@ -17,7 +17,10 @@
   </head>
   <body>
     <canvas id="panel"></canvas>
+    <script src="../../js/helper/helper.js"></script>
     <script>
+      injectText("红色代表 X 轴. 绿色代表 Y 轴. 蓝色代表 Z 轴.");
+
       let panel = document.getElementById("panel");
 
       let renderer = new THREE.WebGLRenderer({
@@ -40,15 +43,17 @@
       scene.add(camera);
 
       // 添加模型
-      let geometry = new THREE.PlaneGeometry(200, 200, 4, 4);
+      let geometry = new THREE.PlaneGeometry(200, 200, 3);
       let textureLoader = new THREE.TextureLoader();
 
       textureLoader.load(
         "./static/earth.jpeg",
         (texture) => {
           let material = new THREE.MeshBasicMaterial({
-            map: texture,
+            // map: texture,
+            color: "#fff",
             side: THREE.DoubleSide,
+            wireframe: true,
           });
           let planmesh = new THREE.Mesh(geometry, material);
           planmesh.rotateX(Math.PI / 2);
@@ -72,7 +77,7 @@
             boxmaterial,
             boxmaterial2,
           ];
-          console.log(boxgeometry, geometry);
+          console.log(boxgeometry, geometry, geometry.faces);
 
           boxgeometry.groups.forEach((v) => (v.materialIndex = 5));
           let boxmesh = new THREE.Mesh(boxgeometry, materialArr);
