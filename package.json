@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "./node_modules/.bin/http-server -p 3500 -c-1"
   },
   "author": "",
   "license": "ISC",
@@ -12,5 +12,8 @@
     "express": "^4.17.3",
     "stats.js": "^0.17.0",
     "three": "^0.138.0"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.0"
   }
 }
