@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2022-02-21 22:46:26
  * @LastEditors: wangshan
- * @LastEditTime: 2022-03-06 14:43:05
+ * @LastEditTime: 2022-03-06 23:42:37
  * @Description: 场景初始化
  */
 ((global) => {
@@ -11,12 +11,13 @@
     globals = {};
     globalsProxy = {};
 
-    constructor(THREE) {
+    constructor(THREE, isAnimate = false) {
       this._three = THREE;
       this.renderer = null;
 
       //   this.globals = { ...this.initEditor(THREE) };
       this.initEditor(THREE);
+      isAnimate ? this.animate() : "";
     }
     createScene(THREE) {
       this.globals.scene = new THREE.Scene();
@@ -94,6 +95,13 @@
         },
       });
       this.globalsProxy = proxy;
+    }
+    animate() {
+      let _this = this;
+      (function animate() {
+        requestAnimationFrame(animate);
+        _this.render();
+      })();
     }
   }
 

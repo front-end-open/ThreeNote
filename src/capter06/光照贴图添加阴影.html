@@ -1,0 +1,71 @@
+<!--
+ * @LastEditTime: 2022-03-07 00:16:54
+ * @Description: 光照贴图添加阴影
+ * @Date: 2022-03-06 23:27:15
+ * @Author: wangshan
+ * @LastEditors: wangshan
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>光照贴图添加阴影</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="../../js/Editor.js"></script>
+    <script src="../../node_modules/dat.gui/build/dat.gui.min.js"></script>
+  </head>
+  <body>
+    <script src="../../js/helper/helper.js"></script>
+    <script src="./libs/tool.js"></script>
+    <script>
+      injectText("红色代表 X 轴. 绿色代表 Y 轴. 蓝色代表 Z 轴.");
+      let editor = new Editor(THREE, true);
+      let controls = {
+        bumpScale: 10,
+      };
+
+      let geometry = new THREE.PlaneGeometry(400, 400);
+
+      geometry.setAttribute("uv2", geometry.getAttribute("uv")); // 设置用于光照阴影贴图用的uv坐标
+
+      // 创建阴影贴图
+      var textureLoader = new THREE.TextureLoader();
+      // 加载光照贴图
+      var textureLight = textureLoader.load("./static/shadow3.jpeg");
+
+      let material = new THREE.MeshPhongMaterial({
+        color: 0x999999,
+        lightMap: textureLight, // 设置光照贴图
+        lightMapIntensity: 1, //烘培光照的强度. 默认 1.
+      });
+
+      let plane = new THREE.Mesh(geometry, material);
+      plane.rotateX(-Math.PI / 2);
+      editor.globals.scene.add(plane);
+
+      // 添加光源
+      const light = new THREE.AmbientLight(0xffffff); // soft white light
+      editor.globals.scene.add(light);
+
+      // 添加辅助对象
+      const length = 200;
+      let arrowHelper = new THREE.Group();
+      arrowHelper.name = "arrowHelper";
+      const origin = new THREE.Vector3(0, 0, 0);
+      const dirX = new THREE.Vector3(10, 0, 0);
+      const dirY = new THREE.Vector3(0, 10, 0);
+      const dirZ = new THREE.Vector3(0, 0, 10);
+      arrowHelper.add(new THREE.ArrowHelper(dirX, origin, length, 0xff0000));
+      arrowHelper.add(new THREE.ArrowHelper(dirY, origin, length, 0x00ff00));
+      arrowHelper.add(new THREE.ArrowHelper(dirZ, origin, length, 0x0000ff));
+      editor.injectHelper({
+        girdhelper: new THREE.GridHelper(5000, 100),
+        // axeshlper: new THREE.AxesHelper(1000),
+        arrowHelper,
+      });
+    </script>
+  </body>
+</html>
