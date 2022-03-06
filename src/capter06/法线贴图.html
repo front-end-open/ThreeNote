@@ -1,0 +1,117 @@
+<!--
+ * @LastEditTime: 2022-03-06 23:05:45
+ * @Description: 使用法线贴图
+ * @Date: 2022-03-06 16:28:35
+ * @Author: wangshan
+ * @LastEditors: wangshan
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>使用法线贴图</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="../../js/Editor.js"></script>
+    <script src="../../node_modules/dat.gui/build/dat.gui.min.js"></script>
+    <style>
+      canvas {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="../../js/helper/helper.js"></script>
+    <script src="./libs/tool.js"></script>
+    <script>
+      injectText("红色代表 X 轴. 绿色代表 Y 轴. 蓝色代表 Z 轴.");
+      let editor = new Editor(THREE);
+      let geometry = new THREE.BoxGeometry(400, 400, 400);
+      let geometry2 = new THREE.BoxGeometry(400, 400, 400);
+      // 创建法线贴图
+      const gui = new dat.GUI();
+      var controls = {
+        normalScale: 3,
+      };
+
+      var f = gui.addFolder("法线贴图深度控制");
+
+      let loader = new THREE.TextureLoader();
+      loader.load(
+        "./static/plaster.jpeg",
+        (texture) => {
+          console.log(texture);
+          let material = new THREE.MeshPhongMaterial({
+            map: texture,
+          });
+          let mesh = new THREE.Mesh(geometry, material);
+          mesh.translateY(300);
+          editor.globals.scene.add(mesh);
+
+          loader.load(
+            "./static/plaster-normal.jpeg",
+            (nromalTexture) => {
+              let material2 = new THREE.MeshPhongMaterial({
+                map: texture,
+                normalMap: nromalTexture, // 使用法线贴图
+              });
+              material2.normalScale = new THREE.Vector2(
+                controls.normalScale,
+                controls.normalScale
+              );
+              material.needsUpdate = true;
+              let mesh2 = new THREE.Mesh(geometry2, material2);
+              mesh2.translateY(300);
+              mesh2.translateX(450);
+
+              f.add(controls, "normalScale", 3, 30, 1).onChange((e) => {
+                mesh2.material.normalScale.set(e, e);
+                mesh2.material.needsUpdate = true;
+              });
+              f.open();
+
+              console.log(geometry2);
+
+              editor.globals.scene.add(mesh2);
+            },
+            undefined,
+            () => {}
+          );
+        },
+        undefined,
+        (e) => {}
+      );
+
+      //   // 添加光源
+      const light = new THREE.AmbientLight(0xffffff); // soft white light
+      editor.globals.scene.add(light);
+
+      // 添加辅助对象
+      const length = 200;
+      let arrowHelper = new THREE.Group();
+      arrowHelper.name = "arrowHelper";
+      const origin = new THREE.Vector3(0, 0, 0);
+      const dirX = new THREE.Vector3(10, 0, 0);
+      const dirY = new THREE.Vector3(0, 10, 0);
+      const dirZ = new THREE.Vector3(0, 0, 10);
+      arrowHelper.add(new THREE.ArrowHelper(dirX, origin, length, 0xff0000));
+      arrowHelper.add(new THREE.ArrowHelper(dirY, origin, length, 0x00ff00));
+      arrowHelper.add(new THREE.ArrowHelper(dirZ, origin, length, 0x0000ff));
+      editor.injectHelper({
+        girdhelper: new THREE.GridHelper(5000, 100),
+        // axeshlper: new THREE.AxesHelper(1000),
+        arrowHelper,
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+
+        editor.render();
+      }
+
+      animate();
+    </script>
+  </body>
+</html>

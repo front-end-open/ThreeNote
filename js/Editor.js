@@ -2,7 +2,7 @@
  * @Author: wangshan
  * @Date: 2022-02-21 22:46:26
  * @LastEditors: wangshan
- * @LastEditTime: 2022-03-05 02:58:00
+ * @LastEditTime: 2022-03-06 14:43:05
  * @Description: 场景初始化
  */
 ((global) => {
@@ -37,13 +37,13 @@
     }
     createCamera(THREE) {
       let camera = new THREE.PerspectiveCamera(
-        75,
+        100,
         window.innerWidth / window.innerHeight,
-        0.5,
-        2000
+        0.75,
+        5000
       );
 
-      camera.position.set(100, 500, 100); // 设置相机所在位置
+      camera.position.set(0, 800, 800); // 设置相机所在位置
       camera.lookAt(new THREE.Vector3(0, 0, 0)); // 设置相机观察方向
       this.globals.camera = camera;
       this.globals.scene.add(camera);

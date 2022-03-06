@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dat.gui": "^0.7.9",
     "express": "^4.17.3",
     "stats.js": "^0.17.0",
     "three": "^0.138.0"

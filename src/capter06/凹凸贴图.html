@@ -1,0 +1,96 @@
+<!--
+ * @LastEditTime: 2022-03-06 23:20:52
+ * @Description: 使用凹凸贴图
+ * @Date: 2022-03-06 16:28:35
+ * @Author: wangshan
+ * @LastEditors: wangshan
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>使用凹凸贴图</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="../../js/Editor.js"></script>
+    <script src="../../node_modules/dat.gui/build/dat.gui.min.js"></script>
+    <style>
+      canvas {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="../../js/helper/helper.js"></script>
+    <script src="./libs/tool.js"></script>
+    <script>
+      injectText("红色代表 X 轴. 绿色代表 Y 轴. 蓝色代表 Z 轴.");
+      let editor = new Editor(THREE);
+      let controls = {
+        bumpScale: 10,
+      };
+
+      let gui = new dat.GUI();
+      gui.addFolder("添加凹凸控制器");
+
+      var geometry = new THREE.BoxGeometry(400, 400, 400); //球体
+      var geometry2 = new THREE.BoxGeometry(400, 400, 400); //球体
+      var textureLoader = new THREE.TextureLoader();
+      // 加载颜色纹理贴图
+      var texture = textureLoader.load("./static/diffuse.jpeg");
+      // 加载凹凸贴图
+      var textureBump = textureLoader.load("./static/bumpMap.jpeg");
+      var material = new THREE.MeshPhongMaterial({
+        map: texture, // 普通纹理贴图
+        bumpMap: textureBump, //凹凸贴图
+        bumpScale: 10, //设置凹凸高度，默认值1。
+      }); //材质对象Material
+      var material2 = new THREE.MeshPhongMaterial({
+        map: texture, // 普通纹理贴图
+      }); //材质对象Material
+      var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+      var mesh2 = new THREE.Mesh(geometry2, material2); //网格模型对象Mesh
+      mesh.material.needsUpdate = true;
+      mesh.translateX(450);
+
+      gui.add(controls, "bumpScale", 3, 30, 1).onChange((e) => {
+        mesh.material.bumpScale = e;
+      });
+      gui.open();
+
+      editor.globals.scene.add(mesh);
+      editor.globals.scene.add(mesh2);
+
+      // 添加光源
+      const light = new THREE.AmbientLight(0xcccccc); // soft white light
+      editor.globals.scene.add(light);
+
+      // 添加辅助对象
+      const length = 200;
+      let arrowHelper = new THREE.Group();
+      arrowHelper.name = "arrowHelper";
+      const origin = new THREE.Vector3(0, 0, 0);
+      const dirX = new THREE.Vector3(10, 0, 0);
+      const dirY = new THREE.Vector3(0, 10, 0);
+      const dirZ = new THREE.Vector3(0, 0, 10);
+      arrowHelper.add(new THREE.ArrowHelper(dirX, origin, length, 0xff0000));
+      arrowHelper.add(new THREE.ArrowHelper(dirY, origin, length, 0x00ff00));
+      arrowHelper.add(new THREE.ArrowHelper(dirZ, origin, length, 0x0000ff));
+      editor.injectHelper({
+        girdhelper: new THREE.GridHelper(5000, 100),
+        // axeshlper: new THREE.AxesHelper(1000),
+        arrowHelper,
+      });
+      console.log(geometry);
+      function animate() {
+        requestAnimationFrame(animate);
+
+        editor.render();
+      }
+
+      animate();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,69 @@
+<!--
+ * @LastEditTime: 2022-03-06 13:54:21
+ * @Description: canvas创建图片作为纹理
+ * @Date: 2022-03-06 13:14:27
+ * @Author: wangshan
+ * @LastEditors: wangshan
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>canvas创建图片作为纹理</title>
+    <script src=".././../node_modules/three/build/three.min.js"></script>
+    <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="../../js/Editor.js"></script>
+    <style>
+      canvas {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="../../js/helper/helper.js"></script>
+    <script src="./libs/tool.js"></script>
+    <script>
+      injectText("红色代表 X 轴. 绿色代表 Y 轴. 蓝色代表 Z 轴.");
+      let editor = new Editor(THREE);
+      let geometry = new THREE.PlaneGeometry(500, 500);
+
+      imgPatter((canvas) => {
+        let texture = new THREE.CanvasTexture(canvas); // 默认开启needsUpdate
+        // texture.needsUpdate = true;
+        let metarial = new THREE.MeshPhongMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+        });
+        let mesh = new THREE.Mesh(geometry, metarial);
+        mesh.rotateX(Math.PI / 2);
+        editor.globals.scene.add(mesh);
+        editor.render();
+      });
+
+      // 添加光源
+      const light = new THREE.AmbientLight(0xffffff); // soft white light
+      editor.globals.scene.add(light);
+
+      // 添加辅助对象
+      const length = 200;
+      let arrowHelper = new THREE.Group();
+      arrowHelper.name = "arrowHelper";
+      const origin = new THREE.Vector3(0, 0, 0);
+      const dirX = new THREE.Vector3(10, 0, 0);
+      const dirY = new THREE.Vector3(0, 10, 0);
+      const dirZ = new THREE.Vector3(0, 0, 10);
+      arrowHelper.add(new THREE.ArrowHelper(dirX, origin, length, 0xff0000));
+      arrowHelper.add(new THREE.ArrowHelper(dirY, origin, length, 0x00ff00));
+      arrowHelper.add(new THREE.ArrowHelper(dirZ, origin, length, 0x0000ff));
+      editor.injectHelper({
+        girdhelper: new THREE.GridHelper(500, 10),
+        // axeshlper: new THREE.AxesHelper(1000),
+        arrowHelper,
+      });
+      console.log(geometry);
+      editor.render();
+    </script>
+  </body>
+</html>

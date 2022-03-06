@@ -1,0 +1,41 @@
+<!--
+ * @LastEditTime: 2022-03-06 01:11:59
+ * @Description:  canvas=beginPath绘制测试
+ * @Date: 2022-03-06 00:58:36
+ * @Author: wangshan
+ * @LastEditors: wangshan
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>canvas=canvas=beginPath绘制测试</title>
+  </head>
+  <body onload="main()">
+    <canvas id="wrap"></canvas>
+    <script>
+      function main() {
+        /*
+          beginPath: 清空子路径从新绘制路径，如果不清空子路径。新的路径将从已有路径开始绘制。
+          **/
+        let ctx = document.getElementById("wrap").getContext("2d");
+        console.log(ctx);
+        // First path
+        ctx.beginPath();
+        ctx.strokeStyle = "black";
+        ctx.moveTo(20, 20);
+        ctx.lineTo(200, 20);
+        ctx.stroke();
+
+        // Second path
+        ctx.beginPath();
+        ctx.strokeStyle = "green";
+        ctx.moveTo(20, 40);
+        ctx.lineTo(200, 40);
+        ctx.stroke();
+      }
+    </script>
+  </body>
+</html>
